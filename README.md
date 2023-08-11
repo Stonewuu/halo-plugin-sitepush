@@ -4,9 +4,10 @@ Halo 2.x 搜索引擎主动推送插件
 
 ## 功能简介
 该插件可将站点内文章模块、页面模块的链接，推送至各大搜索引擎收录平台
+
 当前支持的收录平台：
 - [x] [百度收录](https://ziyuan.baidu.com)
-- [ ] 更多
+- [ ] 更多 (欢迎PR)
 
 ## 使用方式
 - 在 [release页面](https://github.com/Stonewuu/halo-plugin-sitepush/releases) 下载最新的 JAR 文件。
@@ -21,7 +22,7 @@ git clone https://github.com/Stonewuu/halo-plugin-sitepush.git
 
 # 或者当你 fork 之后
 
-git clone git@github.com:{your_github_id}/halo-plugin-sitepush.git
+git clone https://github.com/{your_github_id}/halo-plugin-sitepush.git
 ```
 
 ```bash
