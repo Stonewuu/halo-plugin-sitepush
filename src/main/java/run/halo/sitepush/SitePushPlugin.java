@@ -13,9 +13,9 @@ import run.halo.app.plugin.BasePlugin;
  * @since 1.0.0
  */
 @Component
-public class StarterPlugin extends BasePlugin {
+public class SitePushPlugin extends BasePlugin {
 
-    public StarterPlugin(PluginWrapper wrapper) {
+    public SitePushPlugin(PluginWrapper wrapper) {
         super(wrapper);
     }
 

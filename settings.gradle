@@ -3,5 +3,5 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'plugin-sitepush'
+rootProject.name = 'halo-plugin-sitepush'
 

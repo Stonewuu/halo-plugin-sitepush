@@ -1,23 +1,19 @@
-package run.halo.sitepush;
+package run.halo.sitepush.reconciler;
 
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import run.halo.app.core.extension.content.Category;
 import run.halo.app.core.extension.content.Post;
 import run.halo.app.extension.ExtensionClient;
-import run.halo.app.extension.MetadataUtil;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
+import run.halo.app.infra.SystemSetting;
+import run.halo.sitepush.DefaultSettingFetcher;
+import run.halo.sitepush.service.PushService;
+import run.halo.sitepush.setting.PushBaseSetting;
 
 /**
  * Reconciler for {@link Category}.
@@ -30,22 +26,27 @@ import run.halo.app.extension.controller.Reconciler;
 @Slf4j
 public class PostPushReconciler implements Reconciler<Reconciler.Request> {
 
+    private final DefaultSettingFetcher settingFetcher;
 
     private final ExtensionClient client;
 
+    private PushService pushService;
 
     @Override
     public Result reconcile(Request request) {
         return client.fetch(Post.class, request.name())
             .map(post -> {
-                if(post.isPublished()){
-                    String slug = post.getSpec().getSlug();
-                    String permalink = post.getStatus().getPermalink();
-                    boolean totalPush = PushStrategy.isTotalPush(slug, permalink);
-                    if(totalPush){
-                        return Result.doNotRetry();
+                PushBaseSetting pushBaseSetting =
+                    settingFetcher.fetch(PushBaseSetting.CONFIG_MAP_NAME, PushBaseSetting.GROUP,
+                        PushBaseSetting.class).orElseGet(PushBaseSetting::new);
+                String siteUrl = pushBaseSetting.getSiteUrl();
+                if (pushBaseSetting.getEnable() && StringUtils.hasText(siteUrl)) {
+                    if (post.isPublished()) {
+                        String slug = post.getSpec().getSlug();
+                        String permalink = post.getStatus().getPermalink();
+                        boolean allPush =
+                            pushService.isAllPush(post.getKind() + ":" + slug, siteUrl + permalink);
                     }
-                    return new Result(true, Duration.ofMinutes(1));
                 }
                 return Result.doNotRetry();
             })

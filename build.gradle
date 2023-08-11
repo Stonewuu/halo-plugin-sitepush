@@ -5,7 +5,7 @@ plugins {
     id "run.halo.plugin.devtools" version "0.0.4"
 }
 
-group 'run.halo.starter'
+group 'run.halo.sitepush'
 sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {

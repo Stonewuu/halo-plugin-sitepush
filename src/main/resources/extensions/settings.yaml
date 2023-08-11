@@ -1,0 +1,48 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: plugin-sitepush-settings
+spec:
+  forms:
+    - group: basic
+      label: 基本设置
+      formSchema:
+        - $formkit: radio
+          name: enable
+          id: enable
+          key: enable
+          label: 是否启用站点收录推送
+          help: 禁用后右方的所有站点推送都将不生效
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: text
+          if: $get(enable).value
+          name: siteUrl
+          label: 站点地址
+          placeholder: 请输入站点地址
+          help: 启用后必填，格式：http(s)://(www.)example.com ，结尾无需加斜杠，未填写将无法推送
+
+    - group: baidu
+      label: 百度收录推送
+      formSchema:
+        - $formkit: radio
+          name: baiduEnable
+          id: baiduEnable
+          key: baiduEnable
+          label: 是否启用百度收录推送
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: text
+          if: $get(baiduEnable).value
+          name: token
+          label: 百度推送token
+          placeholder: 请输入token
+          help: token(准入密钥)请前往 百度搜索资源平台(https://ziyuan.baidu.com/)-搜索服务-普通收录 获取，未填写将无法推送

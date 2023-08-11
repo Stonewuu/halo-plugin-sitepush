@@ -8,10 +8,11 @@ spec:
   author:
     name: StoneWu
     website: https://www.stonewu.com
-  logo: https://www.stonewu.com/upload/logo.jpg
+  logo: https://source.stonewu.com/upload/site-push-logo.png
   # 'homepage' usually links to the GitHub repository of the plugin
   homepage: https://github.com/Stonewuu/halo-plugin-sitepush
-  # 'displayName' explains what the plugin does in only a few words
+  settingName: plugin-sitepush-settings
+  configMapName: plugin-sitepush-config
   displayName: "站点推送插件"
   description: "该插件用于将站内页面主动推送至各大搜索引擎"
   license:
