@@ -1,29 +1,31 @@
-# plugin-starter
+# halo-plugin-sitepush
 
-Halo 2.0 插件开发快速开始模板。
+Halo 2.x 搜索引擎主动推送插件
 
-## 开发环境
+## 功能简介
+该插件可将站点内文章模块、页面模块的链接，推送至各大搜索引擎收录平台
+当前支持的收录平台：
+- [x] [百度收录](https://ziyuan.baidu.com)
+- [ ] 更多
+
+## 使用方式
+- 在 [release页面](https://github.com/Stonewuu/halo-plugin-sitepush/releases) 下载最新的 JAR 文件。
+- 在 Halo 后台的插件管理上传 JAR 文件进行安装。
+
+## 参与开发
 
 插件开发的详细文档请查阅：<https://docs.halo.run/developer-guide/plugin/hello-world>
 
 ```bash
-git clone git@github.com:halo-sigs/plugin-starter.git
+git clone https://github.com/Stonewuu/halo-plugin-sitepush.git
 
 # 或者当你 fork 之后
 
-git clone git@github.com:{your_github_id}/plugin-starter.git
+git clone git@github.com:{your_github_id}/halo-plugin-sitepush.git
 ```
 
 ```bash
-cd path/to/plugin-starter
-```
-
-```bash
-# macOS / Linux
-./gradlew pnpmInstall
-
-# Windows
-./gradlew.bat pnpmInstall
+cd path/to/halo-plugin-sitepush
 ```
 
 ```bash
@@ -41,5 +43,5 @@ halo:
   plugin:
     runtime-mode: development
     fixedPluginPath:
-      - "/path/to/plugin-starter"
+      - "/path/to/halo-plugin-sitepush"
 ```
