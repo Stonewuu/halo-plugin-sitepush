@@ -1,8 +1,7 @@
 name: Build Plugin JAR File
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
   release:
     types:
       - created
