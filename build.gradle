@@ -27,15 +27,16 @@ test {
     useJUnitPlatform()
 }
 
-node {
+/*node {
     nodeProjectDir = file("${project.projectDir}/console")
-}
+}*/
 
-task buildFrontend(type: PnpmTask) {
+/*task buildFrontend(type: PnpmTask) {
     args = ['build']
-}
+}*/
 
 build {
     // build frontend before build
-    tasks.getByName('compileJava').dependsOn('buildFrontend')
+//    tasks.getByName('compileJava').dependsOn('buildFrontend')
+    tasks.getByName('compileJava')
 }
