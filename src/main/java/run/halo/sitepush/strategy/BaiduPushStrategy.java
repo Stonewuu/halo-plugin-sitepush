@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import run.halo.sitepush.GlobalCache;
 import run.halo.sitepush.DefaultSettingFetcher;
 import run.halo.sitepush.setting.PushBaiduSetting;
+import run.halo.sitepush.setting.PushBaseSetting;
 
 @Component
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class BaiduPushStrategy implements PushStrategy {
     }
 
     @Override
-    public boolean push(String key, String pageLink) {
+    public boolean push(String siteUrl, String key, String pageLink) {
         PushBaiduSetting pushBaiduSetting =
             settingFetcher.fetch(PushBaiduSetting.CONFIG_MAP_NAME, PushBaiduSetting.GROUP,
                 PushBaiduSetting.class).orElseGet(() -> new PushBaiduSetting());
@@ -32,9 +33,9 @@ public class BaiduPushStrategy implements PushStrategy {
                 GlobalCache.PUSH_CACHE.put(key, true);
                 String baiduPushUrl =
                     String.format("http://data.zz.baidu.com/urls?site=%s&token=%s",
-                        pageLink, token);
+                        siteUrl, token);
                 log.info("Pushing to baidu: {}", baiduPushUrl);
-                HttpResponse execute = HttpRequest.post(baiduPushUrl).form("site", pageLink).execute();
+                HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
                 log.info("Pushing to baidu Result: {}", execute.body());
                 boolean ok = execute.isOk();
                 GlobalCache.PUSH_CACHE.remove(key);

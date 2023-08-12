@@ -45,7 +45,7 @@ public class PostPushReconciler implements Reconciler<Reconciler.Request> {
                         String slug = post.getSpec().getSlug();
                         String permalink = post.getStatus().getPermalink();
                         boolean allPush =
-                            pushService.isAllPush(post.getKind() + ":" + slug, siteUrl + permalink);
+                            pushService.isAllPush(siteUrl, post.getKind() + ":" + slug,  permalink);
                     }
                 }
                 return Result.doNotRetry();

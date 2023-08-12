@@ -44,7 +44,7 @@ public class SinglePagePushReconciler implements Reconciler<Reconciler.Request> 
                             String slug = page.getSpec().getSlug();
                             String permalink = page.getStatus().getPermalink();
                             boolean allPush =
-                                pushService.isAllPush(page.getKind() + ":" + slug, siteUrl + permalink);
+                                pushService.isAllPush(siteUrl, page.getKind() + ":" + slug,  permalink);
                         }
                     }
                     return Result.doNotRetry();

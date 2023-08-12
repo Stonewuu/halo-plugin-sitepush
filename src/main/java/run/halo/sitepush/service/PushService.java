@@ -1,5 +1,5 @@
 package run.halo.sitepush.service;
 
 public interface PushService {
-    boolean isAllPush(String key, String permalink);
+    boolean isAllPush(String site, String slugKey, String permalink);
 }
