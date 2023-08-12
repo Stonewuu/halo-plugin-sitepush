@@ -25,15 +25,15 @@ spec:
           label: 站点地址
           placeholder: 请输入站点地址
           help: 启用后必填，格式：http(s)://(www.)example.com ，结尾无需加斜杠，未填写将无法推送
+
+    - group: baidu
+      label: 百度收录推送
+      formSchema:
         - $formkit: text
           name: siteVerification
           label: 百度站点验证（验证码）
           placeholder: 格式：codeva-xxxxxxx
           help: 申请地址：https://ziyuan.baidu.com/site/siteadd，验证网站使用HTML标签验证，代码中的content就是需要填写的验证码
-
-    - group: baidu
-      label: 百度收录推送
-      formSchema:
         - $formkit: radio
           name: baiduEnable
           id: baiduEnable
@@ -51,5 +51,27 @@ spec:
           label: 百度推送token
           placeholder: 请输入token
           help: token(准入密钥)请前往 百度搜索资源平台(https://ziyuan.baidu.com/)-搜索服务-普通收录 获取，未填写将无法推送
+
+    - group: bing
+      label: 必应收录推送
+      formSchema:
+        - $formkit: radio
+          name: bingEnable
+          id: bingEnable
+          key: bingEnable
+          label: 是否启用必应(bing)收录推送
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: text
+          if: $get(bingEnable).value
+          name: apikey
+          label: 必应apikey
+          placeholder: 请输入apikey
+          help: apikey请前往 Bing Webmaster Tools(https://www.bing.com/webmasters) -右上角齿轮图标设置 - API访问(管理凭据) - API密钥 获取，未填写将无法推送
+
 
 

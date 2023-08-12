@@ -10,6 +10,7 @@ import org.thymeleaf.processor.element.IElementModelStructureHandler;
 import reactor.core.publisher.Mono;
 import run.halo.app.plugin.SettingFetcher;
 import run.halo.app.theme.dialect.TemplateHeadProcessor;
+import run.halo.sitepush.setting.BaiduPushSetting;
 
 
 @Component
@@ -23,7 +24,7 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
 
     @Override
     public Mono<Void> process(ITemplateContext context, IModel model, IElementModelStructureHandler structureHandler) {
-        return settingFetcher.fetch("basic", BasicConfig.class)
+        return settingFetcher.fetch(BaiduPushSetting.GROUP, BaiduPushSetting.class)
             .map(config -> {
                 final IModelFactory modelFactory = context.getModelFactory();
                 model.add(modelFactory.createText(siteHead(config)));
@@ -31,7 +32,7 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
             }).orElse(Mono.empty()).then();
     }
 
-    private String siteHead(BasicConfig config) {
+    private String siteHead(BaiduPushSetting config) {
         String script = "";
 
         //百度站长验证

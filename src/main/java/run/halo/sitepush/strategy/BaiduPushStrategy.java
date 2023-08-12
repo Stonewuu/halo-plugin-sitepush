@@ -6,10 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import run.halo.sitepush.GlobalCache;
 import run.halo.sitepush.DefaultSettingFetcher;
-import run.halo.sitepush.setting.PushBaiduSetting;
-import run.halo.sitepush.setting.PushBaseSetting;
+import run.halo.sitepush.setting.BaiduPushSetting;
 
 @Component
 @AllArgsConstructor
@@ -24,23 +22,19 @@ public class BaiduPushStrategy implements PushStrategy {
 
     @Override
     public boolean push(String siteUrl, String key, String pageLink) {
-        PushBaiduSetting pushBaiduSetting =
-            settingFetcher.fetch(PushBaiduSetting.CONFIG_MAP_NAME, PushBaiduSetting.GROUP,
-                PushBaiduSetting.class).orElseGet(() -> new PushBaiduSetting());
-        String token = pushBaiduSetting.getToken();
-        if (pushBaiduSetting.getBaiduEnable() && StringUtils.hasText(token)) {
-            if (GlobalCache.PUSH_CACHE.get(key) == null) {
-                GlobalCache.PUSH_CACHE.put(key, true);
-                String baiduPushUrl =
-                    String.format("http://data.zz.baidu.com/urls?site=%s&token=%s",
-                        siteUrl, token);
-                log.info("Pushing to baidu: {}", baiduPushUrl);
-                HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
-                log.info("Pushing to baidu Result: {}", execute.body());
-                boolean ok = execute.isOk();
-                GlobalCache.PUSH_CACHE.remove(key);
-                return ok;
-            }
+        BaiduPushSetting baiduPushSetting =
+            settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
+                BaiduPushSetting.class).orElseGet(() -> new BaiduPushSetting());
+        String token = baiduPushSetting.getToken();
+        if (baiduPushSetting.getBaiduEnable() && StringUtils.hasText(token)) {
+            String baiduPushUrl =
+                String.format("http://data.zz.baidu.com/urls?site=%s&token=%s",
+                    siteUrl, token);
+            log.info("Pushing to baidu: {}", baiduPushUrl);
+            HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
+            log.info("Pushing to baidu Result: {}", execute.body());
+            boolean ok = execute.isOk();
+            return ok;
         }
         return true;
     }
