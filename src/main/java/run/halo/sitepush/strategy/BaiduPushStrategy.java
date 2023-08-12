@@ -21,7 +21,7 @@ public class BaiduPushStrategy implements PushStrategy {
     }
 
     @Override
-    public boolean push(String siteUrl, String key, String pageLink) {
+    public int push(String siteUrl, String key, String pageLink) {
         BaiduPushSetting baiduPushSetting =
             settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
                 BaiduPushSetting.class).orElseGet(() -> new BaiduPushSetting());
@@ -34,8 +34,8 @@ public class BaiduPushStrategy implements PushStrategy {
             HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
             log.info("Pushing to baidu Result: {}", execute.body());
             boolean ok = execute.isOk();
-            return ok;
+            return ok ? 1 : 0;
         }
-        return true;
+        return -1;
     }
 }

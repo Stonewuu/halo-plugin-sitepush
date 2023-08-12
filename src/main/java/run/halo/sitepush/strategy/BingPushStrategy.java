@@ -11,6 +11,7 @@ import run.halo.app.infra.utils.JsonUtils;
 import run.halo.sitepush.DefaultSettingFetcher;
 import run.halo.sitepush.setting.BingPushSetting;
 
+import java.time.Instant;
 import java.util.List;
 
 @Component
@@ -25,7 +26,7 @@ public class BingPushStrategy implements PushStrategy {
     }
 
     @Override
-    public boolean push(String siteUrl, String key, String pageLink) {
+    public int push(String siteUrl, String key, String pageLink) {
         BingPushSetting bingPushSetting =
                 settingFetcher.fetch(BingPushSetting.CONFIG_MAP_NAME, BingPushSetting.GROUP,
                         BingPushSetting.class).orElseGet(() -> new BingPushSetting());
@@ -44,13 +45,13 @@ public class BingPushStrategy implements PushStrategy {
                     .execute();
             log.info("Pushing to bing webmasters Result: {}", execute.body());
             boolean ok = execute.isOk();
-            return ok;
+            return ok ? 1 : 0;
         }
-        return true;
+        return -1;
     }
 
     @Data
-    class BingPushBody{
+    class BingPushBody {
         private String siteUrl;
         private List<String> urlList;
     }

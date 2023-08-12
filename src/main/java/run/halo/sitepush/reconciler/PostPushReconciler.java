@@ -10,7 +10,6 @@ import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
-import run.halo.app.infra.SystemSetting;
 import run.halo.sitepush.DefaultSettingFetcher;
 import run.halo.sitepush.service.PushService;
 import run.halo.sitepush.setting.PushBaseSetting;
