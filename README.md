@@ -7,6 +7,7 @@ Halo 2.x 搜索引擎主动推送插件
 
 当前支持的收录平台：
 - [x] [百度收录](https://ziyuan.baidu.com)
+- [x] [必应(bing)收录](https://www.bing.com/webmasters)
 - [ ] 更多 (欢迎PR)
 
 ## 使用方式
