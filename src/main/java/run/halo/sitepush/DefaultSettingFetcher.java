@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import run.halo.app.extension.ConfigMap;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.infra.utils.JsonUtils;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,16 +17,16 @@ public class DefaultSettingFetcher {
 
     public <T> Optional<T> fetch(String configMapName, String group, Class<T> clazz) {
         return getValuesInternal(configMapName)
-            .filter(map -> map.containsKey(group))
-            .map(map -> map.get(group))
-            .map(stringValue -> JsonUtils.jsonToObject(stringValue, clazz));
+                .filter(map -> map.containsKey(group))
+                .map(map -> map.get(group))
+                .map(stringValue -> JsonUtils.jsonToObject(stringValue, clazz));
     }
 
 
     private Optional<Map<String, String>> getValuesInternal(String configMapName) {
         return getConfigMap(configMapName)
-            .filter(configMap -> configMap.getData() != null)
-            .map(ConfigMap::getData);
+                .filter(configMap -> configMap.getData() != null)
+                .map(ConfigMap::getData);
     }
 
     private Optional<ConfigMap> getConfigMap(String configMapName) {

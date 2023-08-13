@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 import run.halo.app.plugin.SettingFetcher;
 import run.halo.app.theme.dialect.TemplateHeadProcessor;
 import run.halo.sitepush.setting.BaiduPushSetting;
+import run.halo.sitepush.setting.BingPushSetting;
 
 
 @Component
@@ -24,22 +25,40 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
 
     @Override
     public Mono<Void> process(ITemplateContext context, IModel model, IElementModelStructureHandler structureHandler) {
-        return settingFetcher.fetch(BaiduPushSetting.GROUP, BaiduPushSetting.class)
-            .map(config -> {
-                final IModelFactory modelFactory = context.getModelFactory();
-                model.add(modelFactory.createText(siteHead(config)));
-                return Mono.empty();
-            }).orElse(Mono.empty()).then();
+        final IModelFactory modelFactory = context.getModelFactory();
+        Mono<Void> baidu = settingFetcher.fetch(BaiduPushSetting.GROUP, BaiduPushSetting.class)
+                .map(config -> {
+                    model.add(modelFactory.createText(baiduSiteHead(config)));
+                    return Mono.empty();
+                }).orElse(Mono.empty()).then(settingFetcher.fetch(BingPushSetting.GROUP, BingPushSetting.class)
+                        .map(config -> {
+                            model.add(modelFactory.createText(bingSiteHead(config)));
+                            return Mono.empty();
+                        }).orElse(Mono.empty()).then());
+
+        return baidu;
     }
 
-    private String siteHead(BaiduPushSetting config) {
+    private String baiduSiteHead(BaiduPushSetting config) {
         String script = "";
 
         //百度站长验证
-        if (StringUtils.isNotBlank(config.getSiteVerification())){
+        if (StringUtils.isNotBlank(config.getSiteVerification())) {
             script = script + """
-                              <meta name="baidu-site-verification" content="%s">
-                """.formatted(config.getSiteVerification());
+                                  <meta name="baidu-site-verification" content="%s">
+                    """.formatted(config.getSiteVerification());
+        }
+        return script;
+    }
+
+    private String bingSiteHead(BingPushSetting config) {
+        String script = "";
+
+        //百度站长验证
+        if (StringUtils.isNotBlank(config.getBingSiteVerification())) {
+            script = script + """
+                                  <meta name="msvalidate.01" content="%s">
+                    """.formatted(config.getBingSiteVerification());
         }
         return script;
     }

@@ -34,30 +34,30 @@ public class PostPushReconciler implements Reconciler<Reconciler.Request> {
     @Override
     public Result reconcile(Request request) {
         return client.fetch(Post.class, request.name())
-            .map(post -> {
-                PushBaseSetting pushBaseSetting =
-                    settingFetcher.fetch(PushBaseSetting.CONFIG_MAP_NAME, PushBaseSetting.GROUP,
-                        PushBaseSetting.class).orElseGet(PushBaseSetting::new);
-                String siteUrl = pushBaseSetting.getSiteUrl();
-                if (pushBaseSetting.getEnable() && StringUtils.hasText(siteUrl)) {
-                    if (post.isPublished()) {
-                        String slug = post.getSpec().getSlug();
-                        String permalink = post.getStatus().getPermalink();
-                        boolean allPush =
-                            pushService.isAllPush(siteUrl, post.getKind() + ":" + slug,  permalink);
+                .map(post -> {
+                    PushBaseSetting pushBaseSetting =
+                            settingFetcher.fetch(PushBaseSetting.CONFIG_MAP_NAME, PushBaseSetting.GROUP,
+                                    PushBaseSetting.class).orElseGet(PushBaseSetting::new);
+                    String siteUrl = pushBaseSetting.getSiteUrl();
+                    if (pushBaseSetting.getEnable() && StringUtils.hasText(siteUrl)) {
+                        if (post.isPublished()) {
+                            String slug = post.getSpec().getSlug();
+                            String permalink = post.getStatus().getPermalink();
+                            boolean allPush =
+                                    pushService.isAllPush(siteUrl, post.getKind() + ":" + slug, permalink);
+                        }
                     }
-                }
-                return Result.doNotRetry();
-            })
-            .orElseGet(() -> new Result(false, null));
+                    return Result.doNotRetry();
+                })
+                .orElseGet(() -> new Result(false, null));
 
     }
 
     @Override
     public Controller setupWith(ControllerBuilder builder) {
         return builder
-            .extension(new Post())
-            .build();
+                .extension(new Post())
+                .build();
     }
 
 

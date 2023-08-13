@@ -3,10 +3,8 @@ package run.halo.sitepush.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import run.halo.app.core.extension.content.Category;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.Metadata;
-import run.halo.app.infra.ExternalUrlSupplier;
 import run.halo.sitepush.DefaultSettingFetcher;
 import run.halo.sitepush.GlobalCache;
 import run.halo.sitepush.scheme.PushLog;
@@ -14,10 +12,9 @@ import run.halo.sitepush.scheme.PushUnique;
 import run.halo.sitepush.strategy.PushStrategy;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -68,7 +65,7 @@ public class PushServiceImpl implements PushService {
                     // 有一个失败了则返回false
                     allPush = false;
                     client.create(pushLog);
-                }else if (pushStatus == 1){
+                } else if (pushStatus == 1) {
                     client.create(pushLog);
                 }
             }

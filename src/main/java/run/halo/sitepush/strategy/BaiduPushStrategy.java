@@ -23,13 +23,13 @@ public class BaiduPushStrategy implements PushStrategy {
     @Override
     public int push(String siteUrl, String key, String pageLink) {
         BaiduPushSetting baiduPushSetting =
-            settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
-                BaiduPushSetting.class).orElseGet(() -> new BaiduPushSetting());
+                settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
+                        BaiduPushSetting.class).orElseGet(() -> new BaiduPushSetting());
         String token = baiduPushSetting.getToken();
         if (baiduPushSetting.getBaiduEnable() && StringUtils.hasText(token)) {
             String baiduPushUrl =
-                String.format("http://data.zz.baidu.com/urls?site=%s&token=%s",
-                    siteUrl, token);
+                    String.format("http://data.zz.baidu.com/urls?site=%s&token=%s",
+                            siteUrl, token);
             log.info("Pushing to baidu: {}", baiduPushUrl);
             HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
             log.info("Pushing to baidu Result: {}", execute.body());

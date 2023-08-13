@@ -9,7 +9,6 @@ import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.GVK;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
