@@ -34,29 +34,29 @@ public class SinglePagePushReconciler implements Reconciler<Reconciler.Request> 
     @Override
     public Result reconcile(Request request) {
         return client.fetch(SinglePage.class, request.name()).map(
-                page -> {
-                    PushBaseSetting pushBaseSetting =
-                        settingFetcher.fetch(PushBaseSetting.CONFIG_MAP_NAME, PushBaseSetting.GROUP,
-                            PushBaseSetting.class).orElseGet(PushBaseSetting::new);
-                    String siteUrl = pushBaseSetting.getSiteUrl();
-                    if (pushBaseSetting.getEnable() && StringUtils.hasText(siteUrl)) {
-                        if (page.isPublished()) {
-                            String slug = page.getSpec().getSlug();
-                            String permalink = page.getStatus().getPermalink();
-                            boolean allPush =
-                                pushService.isAllPush(siteUrl, page.getKind() + ":" + slug,  permalink);
-                        }
-                    }
-                    return Result.doNotRetry();
-                })
-            .orElseGet(() -> new Result(false, null));
+                        page -> {
+                            PushBaseSetting pushBaseSetting =
+                                    settingFetcher.fetch(PushBaseSetting.CONFIG_MAP_NAME, PushBaseSetting.GROUP,
+                                            PushBaseSetting.class).orElseGet(PushBaseSetting::new);
+                            String siteUrl = pushBaseSetting.getSiteUrl();
+                            if (pushBaseSetting.getEnable() && StringUtils.hasText(siteUrl)) {
+                                if (page.isPublished()) {
+                                    String slug = page.getSpec().getSlug();
+                                    String permalink = page.getStatus().getPermalink();
+                                    boolean allPush =
+                                            pushService.isAllPush(siteUrl, page.getKind() + ":" + slug, permalink);
+                                }
+                            }
+                            return Result.doNotRetry();
+                        })
+                .orElseGet(() -> new Result(false, null));
     }
 
     @Override
     public Controller setupWith(ControllerBuilder builder) {
         return builder
-            .extension(new SinglePage())
-            .build();
+                .extension(new SinglePage())
+                .build();
     }
 
 }
