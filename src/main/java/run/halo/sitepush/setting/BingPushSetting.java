@@ -15,4 +15,6 @@ public class BingPushSetting {
 
     private String apikey = "";
 
+    private String bingSiteVerification = "";
+
 }

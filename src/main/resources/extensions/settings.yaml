@@ -55,6 +55,11 @@ spec:
     - group: bing
       label: 必应收录推送
       formSchema:
+        - $formkit: text
+          name: bingSiteVerification
+          label: bing站点验证（验证码）
+          placeholder: 格式：FD2FCC31DFA40B22CF5FB9F88E8AC95A
+          help: 申请地址：https://www.bing.com/webmasters，验证方式选择HTML Meta Tag，代码中的content就是需要填写的验证码
         - $formkit: radio
           name: bingEnable
           id: bingEnable
