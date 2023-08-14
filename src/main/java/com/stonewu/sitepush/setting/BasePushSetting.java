@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class PushBaseSetting {
+public class BasePushSetting {
     public static final String CONFIG_MAP_NAME = "plugin-sitepush-config";
     public static final String GROUP = "basic";
 

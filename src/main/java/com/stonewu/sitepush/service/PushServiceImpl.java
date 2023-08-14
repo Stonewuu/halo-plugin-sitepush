@@ -62,9 +62,10 @@ public class PushServiceImpl implements PushService {
                 metadata.setName(UUID.randomUUID().toString());
                 pushLog.setMetadata(metadata);
                 if (pushStatus == 0) {
-                    // 有一个失败了则返回false
                     allPush = false;
                     client.create(pushLog);
+                } else if (pushStatus == -1) {
+                    allPush = false;
                 } else if (pushStatus == 1) {
                     client.create(pushLog);
                 }
