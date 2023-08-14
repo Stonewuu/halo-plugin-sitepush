@@ -1,6 +1,6 @@
-package run.halo.sitepush;
+package com.stonewu.sitepush;
 
-import run.halo.sitepush.scheme.PushUnique;
+import com.stonewu.sitepush.scheme.PushUnique;
 
 import java.util.HashMap;
 import java.util.Map;

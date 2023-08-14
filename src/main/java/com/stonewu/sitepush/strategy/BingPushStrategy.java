@@ -1,15 +1,15 @@
-package run.halo.sitepush.strategy;
+package com.stonewu.sitepush.strategy;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.stonewu.sitepush.setting.BingPushSetting;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import run.halo.app.infra.utils.JsonUtils;
-import run.halo.sitepush.DefaultSettingFetcher;
-import run.halo.sitepush.setting.BingPushSetting;
+import com.stonewu.sitepush.DefaultSettingFetcher;
 
 import java.util.List;
 

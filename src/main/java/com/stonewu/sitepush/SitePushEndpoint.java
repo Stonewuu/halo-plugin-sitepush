@@ -1,8 +1,8 @@
-package run.halo.sitepush;
+package com.stonewu.sitepush;
 
+import com.stonewu.sitepush.service.PushService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import run.halo.sitepush.service.PushService;
 
 @Component
 @AllArgsConstructor

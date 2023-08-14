@@ -1,5 +1,7 @@
-package run.halo.sitepush.reconciler;
+package com.stonewu.sitepush.reconciler;
 
+import com.stonewu.sitepush.DefaultSettingFetcher;
+import com.stonewu.sitepush.setting.PushBaseSetting;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,9 +11,7 @@ import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
-import run.halo.sitepush.DefaultSettingFetcher;
-import run.halo.sitepush.service.PushService;
-import run.halo.sitepush.setting.PushBaseSetting;
+import com.stonewu.sitepush.service.PushService;
 
 /**
  * The {@link SinglePagePushReconciler} for route request to specific template <code>page

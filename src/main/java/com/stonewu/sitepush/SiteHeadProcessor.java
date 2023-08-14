@@ -1,5 +1,7 @@
-package run.halo.sitepush;
+package com.stonewu.sitepush;
 
+import com.stonewu.sitepush.setting.BaiduPushSetting;
+import com.stonewu.sitepush.setting.BingPushSetting;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -10,8 +12,6 @@ import org.thymeleaf.processor.element.IElementModelStructureHandler;
 import reactor.core.publisher.Mono;
 import run.halo.app.plugin.SettingFetcher;
 import run.halo.app.theme.dialect.TemplateHeadProcessor;
-import run.halo.sitepush.setting.BaiduPushSetting;
-import run.halo.sitepush.setting.BingPushSetting;
 
 
 @Component

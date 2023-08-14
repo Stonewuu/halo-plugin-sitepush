@@ -1,15 +1,15 @@
-package run.halo.sitepush.service;
+package com.stonewu.sitepush.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.Metadata;
-import run.halo.sitepush.DefaultSettingFetcher;
-import run.halo.sitepush.GlobalCache;
-import run.halo.sitepush.scheme.PushLog;
-import run.halo.sitepush.scheme.PushUnique;
-import run.halo.sitepush.strategy.PushStrategy;
+import com.stonewu.sitepush.DefaultSettingFetcher;
+import com.stonewu.sitepush.GlobalCache;
+import com.stonewu.sitepush.scheme.PushLog;
+import com.stonewu.sitepush.scheme.PushUnique;
+import com.stonewu.sitepush.strategy.PushStrategy;
 
 import java.time.Instant;
 import java.util.Map;

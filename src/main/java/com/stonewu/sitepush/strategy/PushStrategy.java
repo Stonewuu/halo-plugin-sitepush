@@ -1,4 +1,4 @@
-package run.halo.sitepush.strategy;
+package com.stonewu.sitepush.strategy;
 
 public interface PushStrategy {
     String getPushType();

@@ -1,4 +1,4 @@
-package run.halo.sitepush;
+package com.stonewu.sitepush;
 
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginWrapper;
@@ -7,8 +7,8 @@ import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
 import run.halo.app.plugin.BasePlugin;
-import run.halo.sitepush.scheme.PushLog;
-import run.halo.sitepush.scheme.PushUnique;
+import com.stonewu.sitepush.scheme.PushLog;
+import com.stonewu.sitepush.scheme.PushUnique;
 
 import java.util.HashMap;
 import java.util.List;

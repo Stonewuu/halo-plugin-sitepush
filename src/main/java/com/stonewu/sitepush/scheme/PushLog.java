@@ -1,4 +1,4 @@
-package run.halo.sitepush.scheme;
+package com.stonewu.sitepush.scheme;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

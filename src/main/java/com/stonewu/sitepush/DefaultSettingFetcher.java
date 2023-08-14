@@ -1,4 +1,4 @@
-package run.halo.sitepush;
+package com.stonewu.sitepush;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

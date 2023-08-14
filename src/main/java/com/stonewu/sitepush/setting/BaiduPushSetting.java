@@ -1,4 +1,4 @@
-package run.halo.sitepush.setting;
+package com.stonewu.sitepush.setting;
 
 import lombok.Data;
 import lombok.ToString;
