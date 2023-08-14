@@ -29,6 +29,9 @@ public class PushServiceImpl implements PushService {
 
     @Override
     public boolean isAllPush(String siteUrl, String slugKey, String permalink) {
+        if(permalink == null || slugKey == null){
+            return false;
+        }
         boolean allPush = true;
         for (Map.Entry<String, PushStrategy> entry : pushStrategyMap.entrySet()) {
             String key = entry.getKey();

@@ -2,6 +2,8 @@ package com.stonewu.sitepush.strategy;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.stonewu.sitepush.setting.BaiduPushSetting;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +34,17 @@ public class BaiduPushStrategy implements PushStrategy {
                             siteUrl, token);
             log.info("Pushing to baidu: {}", baiduPushUrl);
             HttpResponse execute = HttpRequest.post(baiduPushUrl).body(siteUrl + pageLink).execute();
-            log.info("Pushing to baidu Result: {}", execute.body());
+            String body = execute.body();
+            log.info("Pushing to baidu Result: {}", body);
             boolean ok = execute.isOk();
-            return ok ? 1 : 0;
+            if(ok){
+                JSONObject entries = JSONUtil.parseObj(body);
+                Integer success = entries.get("success", Integer.class);
+                if(success == 1){
+                    return 1;
+                }
+            }
+            return 0;
         }
         return -1;
     }
