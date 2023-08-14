@@ -16,6 +16,7 @@ import java.util.List;
 
 /**
  * 站点收录推送插件
+ *
  * @author stonewu
  * @since 1.0.0
  */
@@ -28,7 +29,7 @@ public class SitePushPlugin extends BasePlugin {
     private final ExtensionClient client;
 
     public SitePushPlugin(PluginWrapper wrapper, SchemeManager schemeManager,
-        ExtensionClient client) {
+                          ExtensionClient client) {
         super(wrapper);
         this.schemeManager = schemeManager;
         this.client = client;
@@ -42,6 +43,7 @@ public class SitePushPlugin extends BasePlugin {
         list.forEach(pushUnique -> {
             GlobalCache.PUSH_CACHE.put(pushUnique.getCacheKey(), pushUnique);
         });
+        log.info("成功读取已推送链接 {} 个", list.size());
         List<PushLog> logList = client.list(PushLog.class, null, null);
         logList.forEach(pushLog -> {
             long epochSecond = Instant.now().getEpochSecond();
