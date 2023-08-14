@@ -24,7 +24,7 @@ public class BaiduPushStrategy implements PushStrategy {
     public int push(String siteUrl, String key, String pageLink) {
         BaiduPushSetting baiduPushSetting =
                 settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
-                        BaiduPushSetting.class).orElseGet(() -> new BaiduPushSetting());
+                        BaiduPushSetting.class).orElseGet(BaiduPushSetting::new);
         String token = baiduPushSetting.getToken();
         if (baiduPushSetting.getBaiduEnable() && StringUtils.hasText(token)) {
             String baiduPushUrl =

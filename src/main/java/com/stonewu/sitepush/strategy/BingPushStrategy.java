@@ -28,7 +28,7 @@ public class BingPushStrategy implements PushStrategy {
     public int push(String siteUrl, String key, String pageLink) {
         BingPushSetting bingPushSetting =
                 settingFetcher.fetch(BingPushSetting.CONFIG_MAP_NAME, BingPushSetting.GROUP,
-                        BingPushSetting.class).orElseGet(() -> new BingPushSetting());
+                        BingPushSetting.class).orElseGet(BingPushSetting::new);
         String apikey = bingPushSetting.getApikey();
         if (bingPushSetting.getBingEnable() && StringUtils.hasText(apikey)) {
             String bingPushUrl =
