@@ -28,7 +28,7 @@ public class BaiduSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isDomainVerification() {
-        return baiduPushSetting.getIsDomainVerification();
+        return baiduPushSetting.getIsBaiduDomainVerification();
     }
 
     @Override

@@ -28,7 +28,7 @@ public class BingPushSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isDomainVerification() {
-        return bingPushSetting.getIsDomainVerification();
+        return bingPushSetting.getIsBingDomainVerification();
     }
 
     @Override

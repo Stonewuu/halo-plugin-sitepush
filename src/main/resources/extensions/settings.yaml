@@ -29,7 +29,19 @@ spec:
     - group: baidu
       label: 百度收录推送
       formSchema:
+        - $formkit: radio
+          name: isBaiduDomainVerification
+          id: isBaiduDomainVerification
+          key: isBaiduDomainVerification
+          label: 是否是网域验证
+          value: false
+          options:
+            - label: 是
+              value: true
+            - label: 否
+              value: false
         - $formkit: text
+          if: $get(isBaiduDomainVerification).value == false
           name: siteVerification
           label: 百度站点验证（验证码）
           placeholder: 格式：codeva-xxxxxxx
@@ -55,7 +67,19 @@ spec:
     - group: bing
       label: 必应收录推送
       formSchema:
+        - $formkit: radio
+          name: isBingDomainVerification
+          id: isBingDomainVerification
+          key: isBingDomainVerification
+          label: 是否是网域验证
+          value: false
+          options:
+            - label: 是
+              value: true
+            - label: 否
+              value: false
         - $formkit: text
+          if: $get(isBingDomainVerification).value == false
           name: bingSiteVerification
           label: bing站点验证（验证码）
           placeholder: 格式：FD2FCC31DFA40B22CF5FB9F88E8AC95A
@@ -77,6 +101,45 @@ spec:
           label: 必应apikey
           placeholder: 请输入apikey
           help: apikey请前往 Bing Webmaster Tools(https://www.bing.com/webmasters) -右上角齿轮图标设置 - API访问(管理凭据) - API密钥 获取，未填写将无法推送
+
+    - group: google
+      label: 谷歌收录推送
+      formSchema:
+        - $formkit: radio
+          name: isGoogleDomainVerification
+          id: isGoogleDomainVerification
+          key: isGoogleDomainVerification
+          label: 是否是网域验证
+          value: false
+          options:
+            - label: 是
+              value: true
+            - label: 否
+              value: false
+        - $formkit: text
+          if: $get(isGoogleDomainVerification).value == false
+          name: googleSiteVerification
+          label: google站点验证（验证码）
+          placeholder: 格式：3MKyENvsAfOqs9LL1hxJkxseEMZnwisZVaG8ezodv_E
+          help: 申请地址：https://search.google.com/search-console，验证方式选择 HTML标记，代码中的content就是需要填写的验证码
+        - $formkit: radio
+          name: googleEnable
+          id: googleEnable
+          key: googleEnable
+          label: 是否启用谷歌(google)收录推送
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: text
+          if: $get(googleEnable).value
+          name: privateJson
+          label: google密钥文件内容
+          placeholder: 请输入json文件内容
+          help: 教程地址：https://console.cloud.google.com/apis/credentials
+
 
 
 

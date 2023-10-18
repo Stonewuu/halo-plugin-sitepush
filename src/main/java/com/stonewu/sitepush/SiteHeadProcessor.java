@@ -35,7 +35,10 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
                     .orElse(new BaiduPushSetting())),
             new BingPushSettingProvider(
                 settingFetcher.fetch(BingPushSetting.GROUP, BingPushSetting.class)
-                    .orElse(new BingPushSetting()))
+                    .orElse(new BingPushSetting())),
+            new GooglePushSettingProvider(
+                settingFetcher.fetch(GooglePushSetting.GROUP, GooglePushSetting.class)
+                    .orElse(new GooglePushSetting()))
         );
     }
 
@@ -47,13 +50,15 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
             .flatMap(
                 provider -> {
                     if (!provider.isDomainVerification()) {
-                        return settingFetcher.fetch(provider.getGroup(), provider.getSettingClass())
-                            .map(config -> {
-                                model.add(
-                                    modelFactory.createText(
-                                        provider.getSiteVerificationMeta()));
-                                return Mono.empty();
-                            }).orElse(Mono.empty());
+                        Mono<Object> mono =
+                            settingFetcher.fetch(provider.getGroup(), provider.getSettingClass())
+                                .map(config -> {
+                                    model.add(
+                                        modelFactory.createText(
+                                            provider.getSiteVerificationMeta()));
+                                    return Mono.empty();
+                                }).orElse(Mono.empty());
+                        return mono;
                     }
                     return Mono.empty();
                 }
