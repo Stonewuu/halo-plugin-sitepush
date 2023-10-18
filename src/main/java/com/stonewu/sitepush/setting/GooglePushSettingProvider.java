@@ -43,7 +43,7 @@ public class GooglePushSettingProvider implements PushSettingProvider {
 
     @Override
     public String getAccess() {
-        return googlePushSetting.getPrivateJson();
+        return googlePushSetting.getCredentialsJson();
     }
 
     @Override

@@ -55,11 +55,11 @@ public class GooglePushStrategy implements PushStrategy {
                 GooglePushSetting.GROUP, GooglePushSetting.class)
             .orElseGet(GooglePushSetting::new);
         if (googlePushSetting.getGoogleEnable() && StringUtils.hasText(
-            googlePushSetting.getPrivateJson())) {
+            googlePushSetting.getCredentialsJson())) {
             HttpResponse response;
             try {
                 log.info("Pushing to google webmasters: {}", siteUrl + pageLink);
-                response = update(siteUrl + pageLink, googlePushSetting.getPrivateJson());
+                response = update(siteUrl + pageLink, googlePushSetting.getCredentialsJson());
                 log.info("Pushing to google webmasters result: {}", response.parseAsString());
             } catch (IOException e) {
                 log.info("Push exception: {}", e.getMessage());
@@ -70,9 +70,9 @@ public class GooglePushStrategy implements PushStrategy {
         return -1;
     }
 
-    public HttpResponse update(String url, String privateJson)
+    public HttpResponse update(String url, String credentialsJson)
         throws IOException {
-        GoogleCredentials credential = getGoogleCredential(privateJson, SCOPES);
+        GoogleCredentials credential = getGoogleCredential(credentialsJson, SCOPES);
         NetHttpTransport netHttpTransport = new NetHttpTransport();
         netHttpTransport.supportsMethod(HttpMethods.POST);
 
@@ -94,11 +94,11 @@ public class GooglePushStrategy implements PushStrategy {
         return httpRequest.execute();
     }
 
-    private GoogleCredentials getGoogleCredential(String privateJson,
+    private GoogleCredentials getGoogleCredential(String credentialsJson,
         String scopes)
         throws IOException {
         InputStream inputStream =
-            new ByteArrayInputStream(privateJson.getBytes(StandardCharsets.UTF_8));
+            new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8));
         return getGoogleCredential(inputStream, scopes);
     }
 

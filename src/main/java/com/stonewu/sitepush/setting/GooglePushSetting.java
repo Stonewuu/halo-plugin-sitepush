@@ -16,7 +16,7 @@ public class GooglePushSetting {
 
     private Boolean googleEnable = Boolean.FALSE;
 
-    private String privateJson = "";
+    private String credentialsJson = "";
 
     private String googleSiteVerification = "";
 

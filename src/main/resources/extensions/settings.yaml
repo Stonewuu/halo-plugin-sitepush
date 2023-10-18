@@ -135,10 +135,10 @@ spec:
               value: false
         - $formkit: text
           if: $get(googleEnable).value
-          name: privateJson
-          label: google密钥文件内容
-          placeholder: 请输入json文件内容
-          help: 教程地址：https://console.cloud.google.com/apis/credentials
+          name: credentialsJson
+          label: google凭据json文件内容
+          placeholder: 请将json文件的所有内容粘贴至此
+          help: 申请地址：https://console.cloud.google.com/apis/credentials
 
 
 
