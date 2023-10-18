@@ -12,6 +12,7 @@ Halo 2.x 搜索引擎主动推送插件
 ### 当前支持的收录平台：
 - [x] [百度收录](https://ziyuan.baidu.com)
 - [x] [必应(bing)收录](https://www.bing.com/webmasters)
+- [x] [谷歌(google)收录](https://search.google.com/search-console/)
 - [ ] 更多 (欢迎PR)
 
 ## 安装方式

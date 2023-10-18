@@ -28,7 +28,7 @@ public class GooglePushSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isDomainVerification() {
-        return googlePushSetting.getIsDomainVerification();
+        return googlePushSetting.getIsGoogleDomainVerification();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GooglePushSettingProvider implements PushSettingProvider {
 
     @Override
     public String getAccess() {
-        return googlePushSetting.getPrivate_key_json();
+        return googlePushSetting.getPrivateJson();
     }
 
     @Override
