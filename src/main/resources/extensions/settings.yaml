@@ -138,7 +138,7 @@ spec:
           name: credentialsJson
           label: google凭据json文件内容
           placeholder: 请将json文件的所有内容粘贴至此
-          help: 申请地址：https://console.cloud.google.com/apis/credentials
+          help: 教程地址：https://erzbir.com/archives/useGoogleIndexAPI
 
 
 
