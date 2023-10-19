@@ -20,5 +20,5 @@ public class GooglePushSetting {
 
     private String googleSiteVerification = "";
 
-    private Boolean isGoogleDomainVerification = Boolean.FALSE;
+    private Boolean googleEnableTagVerification = Boolean.TRUE;
 }

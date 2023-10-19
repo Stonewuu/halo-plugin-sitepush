@@ -27,8 +27,8 @@ public class GooglePushSettingProvider implements PushSettingProvider {
     }
 
     @Override
-    public Boolean isDomainVerification() {
-        return googlePushSetting.getIsGoogleDomainVerification();
+    public Boolean isTagVerificationEnable() {
+        return googlePushSetting.getGoogleEnableTagVerification();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class GooglePushSettingProvider implements PushSettingProvider {
 
         if (StringUtils.isNotBlank(getSiteVerification())) {
             script = script + """
-                              <meta name="google-site-verification" content="%s">
+                              <meta name="google-site-verification" content="%s" />
                 """.formatted(getSiteVerification());
         }
         return script;

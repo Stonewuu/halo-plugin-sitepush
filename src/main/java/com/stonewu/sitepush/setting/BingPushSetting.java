@@ -17,5 +17,5 @@ public class BingPushSetting {
 
     private String bingSiteVerification = "";
 
-    private Boolean isBingDomainVerification = Boolean.FALSE;
+    private Boolean bingEnableTagVerification = Boolean.TRUE;
 }

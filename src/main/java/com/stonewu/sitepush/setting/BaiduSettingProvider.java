@@ -27,8 +27,8 @@ public class BaiduSettingProvider implements PushSettingProvider {
     }
 
     @Override
-    public Boolean isDomainVerification() {
-        return baiduPushSetting.getIsBaiduDomainVerification();
+    public Boolean isTagVerificationEnable() {
+        return baiduPushSetting.getBaiduEnableTagVerification();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BaiduSettingProvider implements PushSettingProvider {
         String script = "";
         if (StringUtils.isNotBlank(getSiteVerification())) {
             script = script + """
-                              <meta name="baidu-site-verification" content="%s">
+                              <meta name="baidu-site-verification" content="%s" />
                 """.formatted(getSiteVerification());
         }
         return script;

@@ -27,8 +27,8 @@ public class BingPushSettingProvider implements PushSettingProvider {
     }
 
     @Override
-    public Boolean isDomainVerification() {
-        return bingPushSetting.getIsBingDomainVerification();
+    public Boolean isTagVerificationEnable() {
+        return bingPushSetting.getBingEnableTagVerification();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BingPushSettingProvider implements PushSettingProvider {
 
         if (StringUtils.isNotBlank(getSiteVerification())) {
             script = script + """
-                              <meta name="msvalidate.01" content="%s">
+                              <meta name="msvalidate.01" content="%s" />
                 """.formatted(getSiteVerification());
         }
         return script;

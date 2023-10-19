@@ -49,16 +49,14 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
         Flux<?> fetchAndAddHeaders = Flux.fromIterable(settingProviders)
             .flatMap(
                 provider -> {
-                    if (!provider.isDomainVerification()) {
-                        Mono<Object> mono =
-                            settingFetcher.fetch(provider.getGroup(), provider.getSettingClass())
-                                .map(config -> {
-                                    model.add(
-                                        modelFactory.createText(
-                                            provider.getSiteVerificationMeta()));
-                                    return Mono.empty();
-                                }).orElse(Mono.empty());
-                        return mono;
+                    if (provider.isTagVerificationEnable()) {
+                        return settingFetcher.fetch(provider.getGroup(), provider.getSettingClass())
+                            .map(config -> {
+                                model.add(
+                                    modelFactory.createText(
+                                        provider.getSiteVerificationMeta()));
+                                return Mono.empty();
+                            }).orElse(Mono.empty());
                     }
                     return Mono.empty();
                 }

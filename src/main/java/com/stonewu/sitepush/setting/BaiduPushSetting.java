@@ -17,5 +17,5 @@ public class BaiduPushSetting {
 
     private String token = "";
 
-    private Boolean isBaiduDomainVerification = Boolean.FALSE;
+    private Boolean baiduEnableTagVerification = Boolean.TRUE;
 }

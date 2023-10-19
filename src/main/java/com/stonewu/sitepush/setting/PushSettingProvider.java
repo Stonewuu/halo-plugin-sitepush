@@ -12,9 +12,9 @@ public interface PushSettingProvider {
     Boolean isEnable();
 
     /**
-     * @return 是否是域名认证
+     * @return 是否启用标签验证
      */
-    Boolean isDomainVerification();
+    Boolean isTagVerificationEnable();
 
     /**
      * @return 设置的字节码
