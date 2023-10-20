@@ -18,7 +18,7 @@ export default definePlugin({
           searchable: true,
           menu: {
             name: "站点收录推送",
-            group: "工具",
+            group: "tool",
             icon: markRaw(IconUpload),
             priority: 0,
           },
