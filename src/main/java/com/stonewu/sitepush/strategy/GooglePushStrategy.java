@@ -1,28 +1,20 @@
 package com.stonewu.sitepush.strategy;
 
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpContent;
-import com.google.api.client.http.HttpMethods;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.http.json.JsonHttpContent;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
+import cn.hutool.core.lang.Dict;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONUtil;
 import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.GooglePushSetting;
-import java.io.ByteArrayInputStream;
+import com.stonewu.sitepush.utils.JWTSignUtil;
+import com.stonewu.sitepush.utils.PemReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -36,9 +28,7 @@ import org.springframework.util.StringUtils;
 @Slf4j
 public class GooglePushStrategy implements PushStrategy {
     private DefaultSettingFetcher defaultSettingFetcher;
-    public static final String SCOPES = "https://www.googleapis.com/auth/indexing";
-
-    public static final String PUSH_ENDPOINT =
+    public static final String PUBLISH_ENDPOINT =
         "https://indexing.googleapis.com/v3/urlNotifications:publish";
 
     public static final String UPDATE_TYPE = "URL_UPDATED";
@@ -59,53 +49,89 @@ public class GooglePushStrategy implements PushStrategy {
             HttpResponse response;
             try {
                 log.info("Pushing to google webmasters: {}", siteUrl + pageLink);
-                response = update(siteUrl + pageLink, googlePushSetting.getCredentialsJson());
-                log.info("Pushing to google webmasters result: {}", response.parseAsString());
-            } catch (IOException e) {
+                String token = GooglePushTokenCreator.createToken(
+                    JSONUtil.toBean(googlePushSetting.getCredentialsJson(),
+                        GooglePushTokenCreator.ServiceAccountCredentials.class),
+                    URI.create(PUBLISH_ENDPOINT));
+                response = publish(siteUrl + pageLink, token);
+                log.info("Pushing to google webmasters result: {}", response.body());
+                response.close();
+            } catch (GeneralSecurityException | IOException e) {
                 log.info("Push exception: {}", e.getMessage());
                 return 0;
             }
-            return response.isSuccessStatusCode() ? 1 : 0;
+            return response.isOk() ? 1 : 0;
         }
         return -1;
     }
 
-    public HttpResponse update(String url, String credentialsJson)
-        throws IOException {
-        GoogleCredentials credential = getGoogleCredential(credentialsJson, SCOPES);
-        NetHttpTransport netHttpTransport = new NetHttpTransport();
-        netHttpTransport.supportsMethod(HttpMethods.POST);
-
-        HashMap<String, String> body = new HashMap<>();
-        body.put("type", UPDATE_TYPE);
-        body.put("url", url);
-        HttpContent content = new JsonHttpContent(new GsonFactory(), body);
-
-        return publish(credential, netHttpTransport, content);
+    public HttpResponse publish(String url, String token) throws IOException {
+        GooglePushBody body = new GooglePushBody();
+        body.setType(UPDATE_TYPE);
+        body.setUrl(url);
+        HttpRequest request = HttpRequest
+            .post(PUBLISH_ENDPOINT)
+            .bearerAuth(token)
+            .body(JSONUtil.toJsonStr(body));
+        return request.execute();
     }
 
-    public HttpResponse publish(GoogleCredentials credential, HttpTransport httpTransport,
-        HttpContent httpContent) throws IOException {
-        GenericUrl genericUrl = new GenericUrl(PUSH_ENDPOINT);
-        HttpRequestFactory httpRequestFactory = httpTransport.createRequestFactory();
-        HttpRequest httpRequest = httpRequestFactory.buildPostRequest(genericUrl, httpContent);
-        HttpRequestInitializer httpRequestInitializer = new HttpCredentialsAdapter(credential);
-        httpRequestInitializer.initialize(httpRequest);
-        return httpRequest.execute();
+    private static class GooglePushTokenCreator {
+
+        public static String createToken(ServiceAccountCredentials credentials, URI endpoint)
+            throws IOException,
+            GeneralSecurityException {
+            String privateKeyId = credentials.private_key_id;
+            String privateKey = credentials.private_key;
+            Dict header = Dict.create();
+            header.set("alg", "RS256")
+                .set("kid", privateKeyId)
+                .set("typ", "JWT");
+
+            Dict payload = Dict.create();
+            String clientEmail = credentials.client_email;
+            long l = System.currentTimeMillis();
+            payload.set("iss", clientEmail)
+                .set("aud", getUriForSelfSignedJWT(endpoint))
+                .set("sub", clientEmail)
+                .set("iat", l / 1000)
+                .set("exp", l / 1000 + 3600);
+            return JWTSignUtil.getInstance()
+                .signUsingRsaSha256(PemReader.getInstance().getPrivateKeyFromPEM(privateKey, "RSA"),
+                    header,
+                    payload);
+        }
+
+        private static URI getUriForSelfSignedJWT(URI uri) {
+            if (uri == null || uri.getScheme() == null || uri.getHost() == null) {
+                return uri;
+            }
+            try {
+                return new URI(uri.getScheme(), uri.getHost(), "/", null);
+            } catch (URISyntaxException unused) {
+                return uri;
+            }
+        }
+
+        @Data
+        public static class ServiceAccountCredentials {
+            private String type;
+            private String project_id;
+            private String private_key_id;
+            private String private_key;
+            private String client_email;
+            private String client_id;
+            private String auth_uri;
+            private String token_uri;
+            private String auth_provider_x509_cert_url;
+            private String client_x509_cert_url;
+            private String universe_domain;
+        }
     }
 
-    private GoogleCredentials getGoogleCredential(String credentialsJson,
-        String scopes)
-        throws IOException {
-        InputStream inputStream =
-            new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8));
-        return getGoogleCredential(inputStream, scopes);
-    }
-
-    private GoogleCredentials getGoogleCredential(InputStream in,
-        String scopes)
-        throws IOException {
-        return GoogleCredentials.fromStream(in)
-            .createScoped(Collections.singleton(scopes));
+    @Data
+    static class GooglePushBody {
+        private String url;
+        private String type;
     }
 }
