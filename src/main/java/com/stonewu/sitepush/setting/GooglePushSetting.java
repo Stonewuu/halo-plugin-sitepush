@@ -21,4 +21,18 @@ public class GooglePushSetting {
     private String googleSiteVerification = "";
 
     private Boolean googleEnableTagVerification = Boolean.TRUE;
+
+    private Boolean googleProxyEnable = Boolean.FALSE;
+
+    private String googleProxyType = "HTTP";
+
+    private String googleProxyAddress = "";
+
+    private Integer googleProxyPort = 0;
+
+    private Boolean googleProxyAuthEnable = Boolean.FALSE;
+
+    private String googleProxyUsername = "";
+
+    private String googleProxyPassword = "";
 }

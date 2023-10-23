@@ -1,5 +1,7 @@
 package com.stonewu.sitepush.setting;
 
+import java.net.Proxy;
+
 /**
  * @author Erzbir
  * @Date 2023/10/17
@@ -35,4 +37,18 @@ public interface PushSettingProvider {
      * @return html tag 验证的 meta 标签
      */
     String getSiteVerificationMeta();
+
+    Boolean isUseProxy();
+
+    Proxy.Type getProxyType();
+
+    String getProxyAddress();
+
+    Integer getProxyPort();
+
+    Boolean proxyAuthEnable();
+
+    String getProxyUsername();
+
+    String getProxyPassword();
 }

@@ -18,4 +18,18 @@ public class BingPushSetting {
     private String bingSiteVerification = "";
 
     private Boolean bingEnableTagVerification = Boolean.TRUE;
+
+    private Boolean bingProxyEnable = Boolean.FALSE;
+
+    private String bingProxyType = "HTTP";
+
+    private String bingProxyAddress = "";
+
+    private Integer bingProxyPort = 0;
+
+    private Boolean bingProxyAuthEnable = Boolean.FALSE;
+
+    private String bingProxyUsername = "";
+
+    private String bingProxyPassword = "";
 }

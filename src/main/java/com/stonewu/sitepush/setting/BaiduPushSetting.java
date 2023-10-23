@@ -18,4 +18,18 @@ public class BaiduPushSetting {
     private String token = "";
 
     private Boolean baiduEnableTagVerification = Boolean.TRUE;
+
+    private Boolean baiduProxyEnable = Boolean.FALSE;
+
+    private String baiduProxyType = "HTTP";
+
+    private String baiduProxyAddress = "";
+
+    private Integer baiduProxyPort = 0;
+
+    private Boolean baiduProxyAuthEnable = Boolean.FALSE;
+
+    private String baiduProxyUsername = "";
+
+    private String baiduProxyPassword = "";
 }

@@ -40,12 +40,14 @@ spec:
               value: true
             - label: 否
               value: false
+
         - $formkit: text
           if: $get(baiduEnableTagVerification).value
           name: siteVerification
           label: 百度站点验证（验证码）
           placeholder: 格式：codeva-xxxxxxx
           help: 申请地址：https://ziyuan.baidu.com/site/siteadd，验证网站使用HTML标签验证，代码中的content就是需要填写的验证码
+
         - $formkit: radio
           name: baiduEnable
           id: baiduEnable
@@ -57,6 +59,67 @@ spec:
               value: true
             - label: 关闭
               value: false
+
+        - $formkit: radio
+          if: $get(baiduEnable).value
+          name: baiduProxyEnable
+          id: baiduProxyEnable
+          key: baiduProxyEnable
+          label: 是否启用代理
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+
+        - $formkit: radio
+          if: $get(baiduProxyEnable).value
+          name: baiduProxyType
+          label: 百度代理类型
+          value: HTTP
+          options:
+            - label: http
+              value: HTTP
+            - label: socks
+              value: SOCKS
+
+        - $formkit: text
+          if: $get(baiduProxyEnable).value
+          name: baiduProxyAddress
+          label: 代理地址
+          placeholder: 请输入代理地址
+
+        - $formkit: text
+          if: $get(baiduProxyEnable).value
+          name: baiduProxyPort
+          label: 代理端口
+          placeholder: 请输入代理端口
+
+        - $formkit: radio
+          if: $get(baiduProxyEnable).value
+          name: baiduProxyAuthEnable
+          label: 是否启用代理验证
+          id: baiduProxyAuthEnable
+          key: baiduProxyAuthEnable
+          value: false
+          option:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: text
+          if: $get(baiduProxyAuthEnable).value
+          name: baiduProxyUsername
+          label: 代理用户名
+          placeholder: 请输入代理用户名
+
+        - $formkit: password
+          if: $get(baiduProxyAuthEnable).value
+          name: baiduProxyPassword
+          label: 代理密码
+          placeholder: 请输入代理密码
+
         - $formkit: text
           if: $get(baiduEnable).value
           name: token
@@ -78,12 +141,14 @@ spec:
               value: true
             - label: 否
               value: false
+
         - $formkit: text
           if: $get(bingEnableTagVerification).value
           name: bingSiteVerification
           label: bing站点验证（验证码）
           placeholder: 格式：FD2FCC31DFA40B22CF5FB9F88E8AC95A
           help: 申请地址：https://www.bing.com/webmasters，验证方式选择HTML Meta Tag，代码中的content就是需要填写的验证码
+
         - $formkit: radio
           name: bingEnable
           id: bingEnable
@@ -95,6 +160,66 @@ spec:
               value: true
             - label: 关闭
               value: false
+
+        - $formkit: radio
+          if: $get(bingEnable).value
+          name: bingProxyEnable
+          id: bingProxyEnable
+          key: bingProxyEnable
+          label: 是否启用代理
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+        - $formkit: radio
+          if: $get(bingProxyEnable).value
+          name: bingProxyType
+          label: 必应代理类型
+          value: HTTP
+          options:
+            - label: http
+              value: HTTP
+            - label: socks
+              value: SOCKS
+        - $formkit: text
+          if: $get(bingProxyEnable).value
+          name: bingProxyAddress
+          label: 代理地址
+          placeholder: 请输入代理地址
+
+        - $formkit: text
+          if: $get(bingProxyEnable).value
+          name: bingProxyPort
+          label: 代理端口
+          placeholder: 请输入代理端口
+
+        - $formkit: radio
+          if: $get(bingProxyEnable).value
+          name: bingProxyAuthEnable
+          label: 是否启用代理验证
+          id: bingProxyAuthEnable
+          key: bingProxyAuthEnable
+          value: false
+          option:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+
+        - $formkit: text
+          if: $get(bingProxyAuthEnable).value
+          name: bingProxyUsername
+          label: 代理用户名
+          placeholder: 请输入代理用户名
+
+        - $formkit: password
+          if: $get(bingProxyAuthEnable).value
+          name: bingProxyPassword
+          label: 代理密码
+          placeholder: 请输入代理密码
+
         - $formkit: text
           if: $get(bingEnable).value
           name: apikey
@@ -116,12 +241,14 @@ spec:
               value: true
             - label: 否
               value: false
+
         - $formkit: text
           if: $get(googleEnableTagVerification).value
           name: googleSiteVerification
           label: google站点验证（验证码）
           placeholder: 格式：3MKyENvsAfOqs9LL1hxJkxseEMZnwisZVaG8ezodv_E
           help: 申请地址：https://search.google.com/search-console，验证方式选择 HTML标记，代码中的content就是需要填写的验证码
+
         - $formkit: radio
           name: googleEnable
           id: googleEnable
@@ -133,6 +260,68 @@ spec:
               value: true
             - label: 关闭
               value: false
+
+        - $formkit: radio
+          if: $get(googleEnable).value
+          name: googleProxyEnable
+          id: googleProxyEnable
+          key: googleProxyEnable
+          label: 是否启用代理
+          value: false
+          options:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+
+        - $formkit: radio
+          if: $get(googleProxyEnable).value
+          name: googleProxyType
+          label: 谷歌代理类型
+          value: HTTP
+          options:
+            - label: http
+              value: HTTP
+            - label: socks
+              value: SOCKS
+
+        - $formkit: text
+          if: $get(googleProxyEnable).value
+          name: googleProxyAddress
+          label: 谷歌代理地址
+          placeholder: 请输入代理地址
+
+        - $formkit: text
+          if: $get(googleProxyEnable).value
+          name: googleProxyPort
+          label: 谷歌代理端口
+          placeholder: 请输入代理端口
+
+        - $formkit: radio
+          if: $get(googleProxyEnable).value
+          name: googleProxyAuthEnable
+          label: 是否启用代理验证
+          id: googleProxyAuthEnable
+          key: googleProxyAuthEnable
+          value: false
+          option:
+            - label: 启用
+              value: true
+            - label: 关闭
+              value: false
+
+        - $formkit: text
+          if: $get(googleProxyAuthEnable).value
+          name: googleProxyUsername
+          label: 代理用户名
+          placeholder: 请输入代理用户名
+
+        - $formkit: password
+          if: $get(googleProxyAuthEnable).value
+          name: googleProxyPassword
+          label: 代理密码
+          placeholder: 请输入代理密码
+
         - $formkit: text
           if: $get(googleEnable).value
           name: credentialsJson
