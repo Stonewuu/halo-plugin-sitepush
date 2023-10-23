@@ -1,5 +1,6 @@
 package com.stonewu.sitepush.setting;
 
+import java.net.Proxy;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @AllArgsConstructor
 public class BingPushSettingProvider implements PushSettingProvider {
-    private BingPushSetting bingPushSetting;
+    private BingPushSetting setting;
 
     @Override
     public String getConfigMapName() {
@@ -23,27 +24,27 @@ public class BingPushSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isEnable() {
-        return bingPushSetting.getBingEnable();
+        return setting.getBingEnable();
     }
 
     @Override
     public Boolean isTagVerificationEnable() {
-        return bingPushSetting.getBingEnableTagVerification();
+        return setting.getBingEnableTagVerification();
     }
 
     @Override
     public Class<?> getSettingClass() {
-        return bingPushSetting.getClass();
+        return setting.getClass();
     }
 
     @Override
     public String getSiteVerification() {
-        return bingPushSetting.getBingSiteVerification();
+        return setting.getBingSiteVerification();
     }
 
     @Override
     public String getAccess() {
-        return bingPushSetting.getApikey();
+        return setting.getApikey();
     }
 
     @Override
@@ -56,5 +57,40 @@ public class BingPushSettingProvider implements PushSettingProvider {
                 """.formatted(getSiteVerification());
         }
         return script;
+    }
+
+    @Override
+    public Boolean isUseProxy() {
+        return setting.getBingProxyEnable();
+    }
+
+    @Override
+    public Proxy.Type getProxyType() {
+        return Proxy.Type.valueOf(setting.getBingProxyType());
+    }
+
+    @Override
+    public String getProxyAddress() {
+        return setting.getBingProxyAddress();
+    }
+
+    @Override
+    public Integer getProxyPort() {
+        return setting.getBingProxyPort();
+    }
+
+    @Override
+    public Boolean proxyAuthEnable() {
+        return setting.getBingProxyAuthEnable();
+    }
+
+    @Override
+    public String getProxyUsername() {
+        return setting.getBingProxyUsername();
+    }
+
+    @Override
+    public String getProxyPassword() {
+        return setting.getBingProxyPassword();
     }
 }

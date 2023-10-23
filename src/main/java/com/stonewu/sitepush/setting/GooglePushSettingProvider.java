@@ -1,5 +1,6 @@
 package com.stonewu.sitepush.setting;
 
+import java.net.Proxy;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @AllArgsConstructor
 public class GooglePushSettingProvider implements PushSettingProvider {
-    private GooglePushSetting googlePushSetting;
+    private GooglePushSetting setting;
 
     @Override
     public String getConfigMapName() {
@@ -23,27 +24,27 @@ public class GooglePushSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isEnable() {
-        return googlePushSetting.getGoogleEnable();
+        return setting.getGoogleEnable();
     }
 
     @Override
     public Boolean isTagVerificationEnable() {
-        return googlePushSetting.getGoogleEnableTagVerification();
+        return setting.getGoogleEnableTagVerification();
     }
 
     @Override
     public Class<?> getSettingClass() {
-        return googlePushSetting.getClass();
+        return setting.getClass();
     }
 
     @Override
     public String getSiteVerification() {
-        return googlePushSetting.getGoogleSiteVerification();
+        return setting.getGoogleSiteVerification();
     }
 
     @Override
     public String getAccess() {
-        return googlePushSetting.getCredentialsJson();
+        return setting.getCredentialsJson();
     }
 
     @Override
@@ -56,5 +57,40 @@ public class GooglePushSettingProvider implements PushSettingProvider {
                 """.formatted(getSiteVerification());
         }
         return script;
+    }
+
+    @Override
+    public Boolean isUseProxy() {
+        return setting.getGoogleProxyEnable();
+    }
+
+    @Override
+    public Proxy.Type getProxyType() {
+        return Proxy.Type.valueOf(setting.getGoogleProxyType());
+    }
+
+    @Override
+    public String getProxyAddress() {
+        return setting.getGoogleProxyAddress();
+    }
+
+    @Override
+    public Integer getProxyPort() {
+        return setting.getGoogleProxyPort();
+    }
+
+    @Override
+    public Boolean proxyAuthEnable() {
+        return setting.getGoogleProxyAuthEnable();
+    }
+
+    @Override
+    public String getProxyUsername() {
+        return setting.getGoogleProxyUsername();
+    }
+
+    @Override
+    public String getProxyPassword() {
+        return setting.getGoogleProxyPassword();
     }
 }

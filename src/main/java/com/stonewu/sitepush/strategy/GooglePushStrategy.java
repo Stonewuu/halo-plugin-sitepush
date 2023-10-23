@@ -7,28 +7,31 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONUtil;
 import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.GooglePushSetting;
+import com.stonewu.sitepush.setting.GooglePushSettingProvider;
+import com.stonewu.sitepush.setting.PushSettingProvider;
 import com.stonewu.sitepush.utils.JWTSignUtil;
 import com.stonewu.sitepush.utils.PemReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 /**
  * @author Erzbir
  * @Date 2023/10/12
  */
 @Component
-@AllArgsConstructor
 @Slf4j
-public class GooglePushStrategy implements PushStrategy {
-    private DefaultSettingFetcher defaultSettingFetcher;
-    public static final String PUBLISH_ENDPOINT =
+public class GooglePushStrategy extends AbstractPushStrategy implements PushStrategy {
+
+    public GooglePushStrategy(DefaultSettingFetcher settingFetcher) {
+        super(settingFetcher);
+    }
+
+    public static final String PUSH_ENDPOINT =
         "https://indexing.googleapis.com/v3/urlNotifications:publish";
 
     public static final String UPDATE_TYPE = "URL_UPDATED";
@@ -39,41 +42,34 @@ public class GooglePushStrategy implements PushStrategy {
     }
 
     @Override
-    public int push(String siteUrl, String key, String pageLink) {
-        GooglePushSetting googlePushSetting = defaultSettingFetcher.fetch(
+    protected PushSettingProvider getSettingProvider() {
+        GooglePushSetting googlePushSetting = settingFetcher.fetch(
                 GooglePushSetting.CONFIG_MAP_NAME,
                 GooglePushSetting.GROUP, GooglePushSetting.class)
             .orElseGet(GooglePushSetting::new);
-        if (googlePushSetting.getGoogleEnable() && StringUtils.hasText(
-            googlePushSetting.getCredentialsJson())) {
-            HttpResponse response;
-            try {
-                log.info("Pushing to google webmasters: {}", siteUrl + pageLink);
-                String token = GooglePushTokenCreator.createToken(
-                    JSONUtil.toBean(googlePushSetting.getCredentialsJson(),
-                        GooglePushTokenCreator.ServiceAccountCredentials.class),
-                    URI.create(PUBLISH_ENDPOINT));
-                response = publish(siteUrl + pageLink, token);
-                log.info("Pushing to google webmasters result: {}", response.body());
-                response.close();
-            } catch (GeneralSecurityException | IOException e) {
-                log.info("Push exception: {}", e.getMessage());
-                return 0;
-            }
-            return response.isOk() ? 1 : 0;
-        }
-        return -1;
+        return new GooglePushSettingProvider(googlePushSetting);
     }
 
-    public HttpResponse publish(String url, String token) throws IOException {
+    @Override
+    protected HttpResponse request(String siteUrl, String pageLink,
+        PushSettingProvider settingProvider) throws Exception {
+        log.info("Pushing to google webmasters: {}", PUSH_ENDPOINT);
+        String token = GooglePushTokenCreator.createToken(
+            JSONUtil.toBean(settingProvider.getAccess(),
+                GooglePushTokenCreator.ServiceAccountCredentials.class),
+            URI.create(PUSH_ENDPOINT));
+        return publish(siteUrl + pageLink, token);
+    }
+
+    public HttpResponse publish(String url, String token) {
         GooglePushBody body = new GooglePushBody();
         body.setType(UPDATE_TYPE);
         body.setUrl(url);
         HttpRequest request = HttpRequest
-            .post(PUBLISH_ENDPOINT)
+            .post(PUSH_ENDPOINT)
             .bearerAuth(token)
             .body(JSONUtil.toJsonStr(body));
-        return request.execute();
+        return httpRequestSender.request(request);
     }
 
     private static class GooglePushTokenCreator {

@@ -1,5 +1,6 @@
 package com.stonewu.sitepush.setting;
 
+import java.net.Proxy;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @AllArgsConstructor
 public class BaiduSettingProvider implements PushSettingProvider {
-    private BaiduPushSetting baiduPushSetting;
+    private BaiduPushSetting setting;
 
     @Override
     public String getConfigMapName() {
@@ -23,27 +24,27 @@ public class BaiduSettingProvider implements PushSettingProvider {
 
     @Override
     public Boolean isEnable() {
-        return baiduPushSetting.getBaiduEnable();
+        return setting.getBaiduEnable();
     }
 
     @Override
     public Boolean isTagVerificationEnable() {
-        return baiduPushSetting.getBaiduEnableTagVerification();
+        return setting.getBaiduEnableTagVerification();
     }
 
     @Override
     public Class<?> getSettingClass() {
-        return baiduPushSetting.getClass();
+        return setting.getClass();
     }
 
     @Override
     public String getSiteVerification() {
-        return baiduPushSetting.getSiteVerification();
+        return setting.getSiteVerification();
     }
 
     @Override
     public String getAccess() {
-        return baiduPushSetting.getToken();
+        return setting.getToken();
     }
 
     @Override
@@ -55,5 +56,40 @@ public class BaiduSettingProvider implements PushSettingProvider {
                 """.formatted(getSiteVerification());
         }
         return script;
+    }
+
+    @Override
+    public Boolean isUseProxy() {
+        return setting.getBaiduProxyEnable();
+    }
+
+    @Override
+    public Proxy.Type getProxyType() {
+        return Proxy.Type.valueOf(setting.getBaiduProxyType());
+    }
+
+    @Override
+    public String getProxyAddress() {
+        return setting.getBaiduProxyAddress();
+    }
+
+    @Override
+    public Integer getProxyPort() {
+        return setting.getBaiduProxyPort();
+    }
+
+    @Override
+    public Boolean proxyAuthEnable() {
+        return setting.getBaiduProxyAuthEnable();
+    }
+
+    @Override
+    public String getProxyUsername() {
+        return setting.getBaiduProxyUsername();
+    }
+
+    @Override
+    public String getProxyPassword() {
+        return setting.getBaiduProxyPassword();
     }
 }
