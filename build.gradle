@@ -18,7 +18,6 @@ repositories {
 dependencies {
     implementation platform('run.halo.tools.platform:plugin:2.6.0-SNAPSHOT')
     implementation 'cn.hutool:hutool-all:5.8.20'
-    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
     compileOnly 'run.halo.app:api'
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
