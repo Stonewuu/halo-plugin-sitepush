@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {getLogListApi} from '@/api/pushlog/pushlog'
 import type {PushLogs, PushLogsList} from "../types";
-import {nextTick, onMounted, reactive, ref, toRefs, watch} from "vue";
-import {IconArrowLeft, IconArrowRight, VPagination,} from "@halo-dev/components";
+import {onMounted, reactive, ref, toRefs, watch} from "vue";
+import {VPagination,} from "@halo-dev/components";
 
 const pushLogsList = reactive<PushLogsList<PushLogs>>({
   page: 1,
@@ -21,7 +21,7 @@ const {page, size, total, items, first, last, hasNext, hasPrevious, totalPages} 
 
 const loadData = async (logList: PushLogsList<PushLogs>) => {
   // 清空表格数据
-  logList.items = []
+  items.value = []
   // 封装参数
   const params = {
     page: logList.page,
@@ -51,21 +51,21 @@ const refetch = async () => {
   await loadData(pushLogsList)
 }
 
-const changeSize = (pageSize: number) => {
+const changeSize = async (pageSize: number) => {
   if (pageSize > total.value) {
     return;
   }
   size.value = pageSize;
-  loadData(pushLogsList);
+  await refetch();
 }
 
-const changePage = (pageIndex: number) => {
+const changePage = async (pageIndex: number) => {
   page.value = pageIndex
-  loadData(pushLogsList)
+  await refetch();
 }
 
-watch(size, () => changeSize(size.value))
-watch(page, () => changePage(page.value))
+watch(size, async () => changeSize(size.value))
+watch(page, async () => changePage(page.value))
 
 const tabs = [
   {
@@ -157,7 +157,7 @@ function dateFormat(timestamp: number | string | Date, format = 'YYYY-MM-DD HH:m
               <th>推送地址</th>
               <th>结果</th>
             </tr>
-            <tr v-for="(item, index) in pushLogsList.items"
+            <tr v-for="(item, index) in items"
                 class="todo"
                 :key="index">
               <td>{{ dateFormat(item.createTime * 1000, 'YYYY-MM-DD HH:mm:ss') }}</td>
@@ -168,13 +168,13 @@ function dateFormat(timestamp: number | string | Date, format = 'YYYY-MM-DD HH:m
           </table>
         </div>
         <VPagination
-          v-model:page="page"
-          v-model:size="size"
-          :page-label="$t('core.components.pagination.page_label')"
-          :size-label="$t('core.components.pagination.size_label')"
-          :total-label="$t('core.components.pagination.total_label', { total: total })"
-          :total="total"
-          :size-options="[10, 20, 30, 50, 100]"
+            v-model:page="page"
+            v-model:size="size"
+            :page-label="$t('core.components.pagination.page_label')"
+            :size-label="$t('core.components.pagination.size_label')"
+            :total-label="$t('core.components.pagination.total_label', { total: total })"
+            :total="total"
+            :size-options="[10, 20, 30, 50, 100]"
         />
       </div>
     </div>
