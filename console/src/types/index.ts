@@ -27,11 +27,11 @@ export interface PushLogs {
 /**
  *
  */
-export interface PushLogsList {
+export interface PushLogsList<T> {
     page: number;
     size: number;
     total: number;
-    items: Array<PushLogs>;
+    items: Array<T>;
     first: boolean;
     last: boolean;
     hasNext: boolean;

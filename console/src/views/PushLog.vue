@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import axios from "axios";
+import {getLogListApi} from '@/api/pushlog/pushlog'
 import type {PushLogs, PushLogsList} from "../types";
-import {computed, onMounted, ref} from "vue";
+import {onMounted, reactive, ref, toRefs, watch} from "vue";
+import {VPagination,} from "@halo-dev/components";
 
-const http = axios.create({
-  baseURL: "/",
-  timeout: 1000,
-});
-
-const pushLogsList = ref<PushLogsList>({
+const pushLogsList = reactive<PushLogsList<PushLogs>>({
   page: 1,
   size: 20,
   total: 0,
@@ -19,6 +15,57 @@ const pushLogsList = ref<PushLogsList>({
   hasPrevious: false,
   totalPages: 0,
 });
+
+const {page, size, total, items, first, last, hasNext, hasPrevious, totalPages} = toRefs(pushLogsList)
+
+
+const loadData = async (logList: PushLogsList<PushLogs>) => {
+  // 清空表格数据
+  items.value = []
+  // 封装参数
+  const params = {
+    page: logList.page,
+    size: logList.size
+  }
+
+  const {data} = await getLogListApi(params)
+
+  items.value = data.items;
+  total.value = data.total;
+  first.value = data.first;
+  last.value = data.last;
+  hasNext.value = data.hasNext;
+  hasPrevious.value = data.hasPrevious;
+  totalPages.value = data.totalPages;
+
+}
+
+onMounted(() => loadData(pushLogsList))
+
+const refresh = () => {
+  page.value = 1;
+  loadData(pushLogsList)
+}
+
+const refetch = async () => {
+  await loadData(pushLogsList)
+}
+
+const changeSize = async (pageSize: number) => {
+  if (pageSize > total.value) {
+    return;
+  }
+  size.value = pageSize;
+  await refetch();
+}
+
+const changePage = async (pageIndex: number) => {
+  page.value = pageIndex
+  await refetch();
+}
+
+watch(size, async () => changeSize(size.value))
+watch(page, async () => changePage(page.value))
 
 const tabs = [
   {
@@ -34,28 +81,15 @@ const tabs = [
 
 const activeTab = ref("All");
 
-/**
- * 列表展示的数据
- */
-const pushLogs = computed(() => {
-  return pushLogsList.value.items;
-});
-
-onMounted(handleFetchLogs);
-
 // 查看 http://localhost:8090/swagger-ui.html
-function handleFetchLogs() {
-  http
-      .get<PushLogsList>("/apis/sitepush.halo.run/v1alpha1/pushLogs")
-      .then((response) => {
-        pushLogsList.value = response.data;
-      });
-}
-function dateFormat (timestamp: number|string|Date, format = 'YYYY-MM-DD HH:mm:ss'): string {
+
+function dateFormat(timestamp: number | string | Date, format = 'YYYY-MM-DD HH:mm:ss'): string {
   var date = new Date(timestamp)
-  function fixedTwo (value: number): string {
+
+  function fixedTwo(value: number): string {
     return value < 10 ? '0' + value : String(value)
   }
+
   var showTime = format
   if (showTime.includes('SSS')) {
     const S = date.getMilliseconds()
@@ -93,7 +127,12 @@ function dateFormat (timestamp: number|string|Date, format = 'YYYY-MM-DD HH:mm:s
   <div class="flex items-center justify-between bg-white p-4 h-14">
     <div class="min-w-0 flex-1 self-center">
       <h2 class="flex items-center truncate text-xl font-bold text-gray-800">
-        <svg viewBox="0 0 20 20" width="1.2em" height="1.2em" class="mr-2 self-center"><g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 14.5v-7l-5-5h-5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2z"/><path d="M11.5 6.5v4h3m-9-6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2"/></g></svg>
+        <svg viewBox="0 0 20 20" width="1.2em" height="1.2em" class="mr-2 self-center">
+          <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.5 14.5v-7l-5-5h-5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2z"/>
+            <path d="M11.5 6.5v4h3m-9-6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2"/>
+          </g>
+        </svg>
         <span>推送日志</span>
       </h2>
     </div>
@@ -118,16 +157,25 @@ function dateFormat (timestamp: number|string|Date, format = 'YYYY-MM-DD HH:mm:s
               <th>推送地址</th>
               <th>结果</th>
             </tr>
-            <tr v-for="(log, index) in pushLogs"
+            <tr v-for="(item, index) in items"
                 class="todo"
                 :key="index">
-              <td>{{ dateFormat(log.createTime * 1000, 'YYYY-MM-DD HH:mm:ss') }}</td>
-              <td>{{ log.pushType }}</td>
-              <td>{{ log.pushUrl }}</td>
-              <td>{{ log.pushStatus == 1 ? '成功' : log.pushStatus == 0 ? '失败' : '跳过' }}</td>
+              <td>{{ dateFormat(item.createTime * 1000, 'YYYY-MM-DD HH:mm:ss') }}</td>
+              <td>{{ item.pushType }}</td>
+              <td>{{ item.pushUrl }}</td>
+              <td>{{ item.pushStatus == 1 ? '成功' : item.pushStatus == 0 ? '失败' : '跳过' }}</td>
             </tr>
           </table>
         </div>
+        <VPagination
+            v-model:page="page"
+            v-model:size="size"
+            :page-label="$t('core.components.pagination.page_label')"
+            :size-label="$t('core.components.pagination.size_label')"
+            :total-label="$t('core.components.pagination.total_label', { total: total })"
+            :total="total"
+            :size-options="[10, 20, 30, 50, 100]"
+        />
       </div>
     </div>
   </div>
