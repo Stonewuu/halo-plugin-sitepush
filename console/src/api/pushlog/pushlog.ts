@@ -7,3 +7,11 @@ export const getLogListApi = (params: object) => {
         params
     })
 }
+
+
+export const clearAllLogApi = () => {
+  return request({
+    url: '/apis/api.plugin.halo.run/v1alpha1/plugins/PluginSitePush/pushLogs/clear',
+    method: 'delete'
+  })
+}

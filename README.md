@@ -19,10 +19,18 @@ Halo 2.x 搜索引擎主动推送插件
 - 在 [release页面](https://github.com/Stonewuu/halo-plugin-sitepush/releases) 下载最新的 JAR 文件。
 - 在 Halo 后台的插件管理上传 JAR 文件进行安装。
 
-## 使用方式
-- 安装完成后，在Halo后台的 `插件` -> `站点推送插件` 配置页面，进行配置。
+## 使用说明
+- 安装完成后，在 Halo 后台的 `插件` -> `站点推送插件` 配置页面，进行配置。
+- 推送的时机是：插件启动时、 页面与文章的发布时
+- 谷歌推送需要网络能访问谷歌，其他推送同理
 
-![插件截图](https://github.com/Stonewuu/halo-plugin-sitepush/assets/25025423/97b16d63-4916-45c4-bcd9-db7db452a8c9)
+![插件截图](https://github.com/Erzbir/halo-plugin-sitepush/assets/100007608/0f258f18-1e2d-4d6d-b7ca-7c8aee8ffc9f)
+
+## 配置说明
+- 如果是通过 dns 记录或者其他方式已经认证，则不需要网站验证码
+- 此插件的推送支持代理（支持无认证和 basic auth），配置此项之后需确保代理可用
+  
+
 
 ## 参与开发
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {getLogListApi} from '@/api/pushlog/pushlog'
-import type {PushLogs, PushLogsList} from "../types";
+import {clearAllLogApi, getLogListApi} from '@/api/pushlog/pushlog'
+import type {PushLogs, PushLogsList} from "@/types";
 import {onMounted, reactive, ref, toRefs, watch} from "vue";
-import {VPagination,} from "@halo-dev/components";
+import {VPagination} from "@halo-dev/components";
 
 const pushLogsList = reactive<PushLogsList<PushLogs>>({
   page: 1,
@@ -83,6 +83,11 @@ const activeTab = ref("All");
 
 // 查看 http://localhost:8090/swagger-ui.html
 
+const clearLog = () => {
+  clearAllLogApi();
+  refetch();
+}
+
 function dateFormat(timestamp: number | string | Date, format = 'YYYY-MM-DD HH:mm:ss'): string {
   var date = new Date(timestamp)
 
@@ -142,8 +147,11 @@ function dateFormat(timestamp: number | string | Date, format = 'YYYY-MM-DD HH:m
       <div class="card-header">
         <div class="tabbar-outline tabbar-direction-row tabbar-wrapper w-full !rounded-none">
           <div class="tabbar-items">
-            <div class="tabbar-item-active tabbar-item">
+            <div class="tabbar-item-active tabbar-item items-start">
               <div class="tabbar-item-label">日志</div>
+            </div>
+            <div class="tabbar-item-active tabbar-item items-end ml-auto">
+              <div class="tabbar-item-label text-center" @click="clearLog">清除</div>
             </div>
           </div>
         </div>
