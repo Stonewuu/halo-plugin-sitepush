@@ -1,6 +1,6 @@
 package com.stonewu.sitepush.setting;
 
-import java.net.Proxy;
+import reactor.netty.transport.ProxyProvider;
 
 /**
  * @author Erzbir
@@ -40,7 +40,7 @@ public interface PushSettingProvider {
 
     Boolean isUseProxy();
 
-    Proxy.Type getProxyType();
+    ProxyProvider.Proxy getProxyType();
 
     String getProxyAddress();
 

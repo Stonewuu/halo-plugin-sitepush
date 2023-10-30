@@ -1,10 +1,12 @@
 package com.stonewu.sitepush.utils;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import java.net.Proxy;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import java.net.InetSocketAddress;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * @author Erzbir
@@ -12,18 +14,22 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ProxyHttpRequestSender implements HttpRequestSender {
+@Slf4j
+public class ProxyHttpRequestSender extends AbstractHttpRequestSender implements HttpRequestSender {
     private Proxy proxy;
-    private DefaultHttpRequestSender defaultHttpRequestSender;
 
     public ProxyHttpRequestSender(Proxy proxy) {
         this.proxy = proxy;
-        defaultHttpRequestSender = new DefaultHttpRequestSender();
     }
 
     @Override
-    public HttpResponse request(HttpRequest request) {
-        return defaultHttpRequestSender.request(request.setProxy(proxy));
+    public HttpClient.RequestSender getRequestSender(HttpMethod httpMethod,
+        HttpHeaders httpHeaders) {
+        return httpClient
+            .headers(builder -> builder.add(httpHeaders))
+            .proxy(proxyOptions -> proxyOptions.type(proxy.type())
+                .address((InetSocketAddress) proxy.address()))
+            .request(httpMethod);
     }
 
     @Override

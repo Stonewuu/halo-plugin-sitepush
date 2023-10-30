@@ -1,16 +1,17 @@
 package com.stonewu.sitepush.strategy;
 
-import cn.hutool.http.HttpResponse;
 import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.PushSettingProvider;
 import com.stonewu.sitepush.utils.AuthProxyHttpRequestSender;
 import com.stonewu.sitepush.utils.DefaultHttpRequestSender;
 import com.stonewu.sitepush.utils.HttpRequestSender;
+import com.stonewu.sitepush.utils.HttpResponse;
+import com.stonewu.sitepush.utils.Proxy;
 import com.stonewu.sitepush.utils.ProxyHttpRequestSender;
 import java.net.InetSocketAddress;
-import java.net.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
 
 /**
  * @author Erzbir
@@ -34,15 +35,17 @@ public abstract class AbstractPushStrategy implements PushStrategy {
         if (settingProvider.isEnable() && StringUtils.hasText(token)) {
             HttpResponse response;
             try {
-                response = request(siteUrl, pageLink, settingProvider);
+                response = request(siteUrl, pageLink, settingProvider).block();
+                if (response == null) {
+                    throw new Exception();
+                }
             } catch (Exception e) {
                 log.info("Push exception: {}", e.getMessage());
                 return 0;
             }
-            String body = response.body();
+            String body = response.body().block();
             log.info("Pushing to {} Result: {}", getPushType(), body);
-            boolean ok = response.isOk();
-            response.close();
+            boolean ok = response.code() == 200;
             return ok ? 1 : 0;
         }
         return -1;
@@ -70,6 +73,6 @@ public abstract class AbstractPushStrategy implements PushStrategy {
 
     protected abstract PushSettingProvider getSettingProvider();
 
-    protected abstract HttpResponse request(String siteUrl, String pageLink,
+    protected abstract Mono<HttpResponse> request(String siteUrl, String pageLink,
         PushSettingProvider settingProvider) throws Exception;
 }

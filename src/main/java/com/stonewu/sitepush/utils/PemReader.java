@@ -1,6 +1,5 @@
 package com.stonewu.sitepush.utils;
 
-import cn.hutool.core.codec.Base64;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 
 /**
  * @author Erzbir
@@ -40,7 +40,7 @@ public class PemReader {
                 }
             }
 
-            byte[] keyBytes = Base64.decode(keyContent.toString());
+            byte[] keyBytes = Base64.getDecoder().decode(keyContent.toString());
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             return KeyFactory.getInstance(algorithm).generatePrivate(keySpec);
         } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
