@@ -1,7 +1,6 @@
 package com.stonewu.sitepush.setting;
 
 import reactor.netty.transport.ProxyProvider;
-import java.net.Proxy;
 
 /**
  * @author Erzbir

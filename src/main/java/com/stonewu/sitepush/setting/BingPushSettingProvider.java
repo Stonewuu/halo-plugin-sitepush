@@ -1,6 +1,5 @@
 package com.stonewu.sitepush.setting;
 
-import java.net.Proxy;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import reactor.netty.transport.ProxyProvider;
