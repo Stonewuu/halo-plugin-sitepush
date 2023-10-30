@@ -1,11 +1,13 @@
 package com.stonewu.sitepush.utils;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.net.Proxy;
+import reactor.netty.http.client.HttpClient;
 
 /**
  * @author Erzbir
@@ -13,10 +15,11 @@ import java.net.Proxy;
  */
 @Getter
 @Setter
-public class AuthProxyHttpRequestSender implements HttpRequestSender {
+public class AuthProxyHttpRequestSender extends AbstractHttpRequestSender
+    implements HttpRequestSender {
+    private final ProxyHttpRequestSender proxyHttpRequestSender;
     private String username;
     private String password;
-    private final ProxyHttpRequestSender proxyHttpRequestSender;
 
     public AuthProxyHttpRequestSender(String username, String password, Proxy proxy) {
         proxyHttpRequestSender = new ProxyHttpRequestSender(proxy);
@@ -26,13 +29,17 @@ public class AuthProxyHttpRequestSender implements HttpRequestSender {
 
 
     @Override
-    public HttpResponse request(HttpRequest request) {
-        request = request.basicProxyAuth(username, password);
-        return proxyHttpRequestSender.request(request);
+    public boolean isProxy() {
+        return true;
     }
 
     @Override
-    public boolean isProxy() {
-        return true;
+    protected HttpClient.RequestSender getRequestSender(HttpMethod httpMethod,
+        HttpHeaders httpHeaders) {
+        final String data = username.concat(":").concat(password);
+        String token =
+            "Basic " + Base64.getEncoder().encodeToString(data.getBytes(StandardCharsets.UTF_8));
+        httpHeaders.add(HttpHeaderNames.PROXY_AUTHORIZATION, token);
+        return proxyHttpRequestSender.getRequestSender(httpMethod, httpHeaders);
     }
 }

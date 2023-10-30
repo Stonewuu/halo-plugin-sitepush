@@ -1,8 +1,8 @@
 package com.stonewu.sitepush.setting;
 
-import java.net.Proxy;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import reactor.netty.transport.ProxyProvider;
 
 /**
  * @author Erzbir
@@ -65,8 +65,11 @@ public class GooglePushSettingProvider implements PushSettingProvider {
     }
 
     @Override
-    public Proxy.Type getProxyType() {
-        return Proxy.Type.valueOf(setting.getGoogleProxyType());
+    public ProxyProvider.Proxy getProxyType() {
+        if (setting.getGoogleProxyType().equals("SOCKS")) {
+            return ProxyProvider.Proxy.SOCKS5;
+        }
+        return ProxyProvider.Proxy.valueOf(setting.getGoogleProxyType());
     }
 
     @Override

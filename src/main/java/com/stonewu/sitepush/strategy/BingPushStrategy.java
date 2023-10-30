@@ -1,15 +1,23 @@
 package com.stonewu.sitepush.strategy;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.BingPushSetting;
 import com.stonewu.sitepush.setting.BingPushSettingProvider;
 import com.stonewu.sitepush.setting.PushSettingProvider;
+import com.stonewu.sitepush.utils.HttpResponse;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpMethod;
+
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 import run.halo.app.infra.utils.JsonUtils;
 
 @Component
@@ -36,20 +44,22 @@ public class BingPushStrategy extends AbstractPushStrategy implements PushStrate
     }
 
     @Override
-    protected HttpResponse request(String siteUrl, String pageLink,
-        PushSettingProvider settingProvider) {
+    protected Mono<HttpResponse> request(String siteUrl, String pageLink,
+        PushSettingProvider settingProvider)
+        throws IOException, ExecutionException, InterruptedException {
         String bingPushUrl = String.format(PUSH_ENDPOINT, settingProvider.getAccess());
         log.info("Pushing to bing webmasters: {}", bingPushUrl);
         BingPushBody bingPushBody = new BingPushBody();
         bingPushBody.setSiteUrl(siteUrl);
         bingPushBody.setUrlList(List.of(siteUrl + pageLink));
-        HttpRequest httpRequest = HttpRequest.post(bingPushUrl)
-            .body(JsonUtils.objectToJson(bingPushBody))
-            .contentType("application/json; charset=utf-8");
-        return httpRequestSender.request(httpRequest);
+        HttpHeaders httpHeaders = new DefaultHttpHeaders();
+        httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
+        return httpRequestSender.request(bingPushUrl, HttpMethod.POST, httpHeaders,
+            JsonUtils.objectToJson(bingPushBody));
     }
 
     @Data
+    static
     class BingPushBody {
         private String siteUrl;
         private List<String> urlList;

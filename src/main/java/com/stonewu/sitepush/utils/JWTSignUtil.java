@@ -1,12 +1,12 @@
 package com.stonewu.sitepush.utils;
 
-import cn.hutool.core.codec.Base64;
-import cn.hutool.core.lang.Dict;
-import cn.hutool.json.JSONUtil;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import java.util.Base64;
+import java.util.Map;
+import run.halo.app.infra.utils.JsonUtils;
 
 /**
  * @author Erzbir
@@ -23,18 +23,20 @@ public class JWTSignUtil {
 
     public String signUsingRsaSha256(
         PrivateKey privateKey,
-        Dict header,
-        Dict payload)
+        Map<String, ?> header,
+        Map<String, ?> payload)
         throws GeneralSecurityException {
         String headerBase64 =
-            Base64.encodeUrlSafe(JSONUtil.toJsonStr(header).getBytes(StandardCharsets.UTF_8));
+            Base64.getUrlEncoder()
+                .encodeToString(JsonUtils.objectToJson(header).getBytes(StandardCharsets.UTF_8));
         String payloadBase64 =
-            Base64.encodeUrlSafe(JSONUtil.toJsonStr(payload).getBytes(StandardCharsets.UTF_8));
+            Base64.getUrlEncoder()
+                .encodeToString(JsonUtils.objectToJson(payload).getBytes(StandardCharsets.UTF_8));
         String content = headerBase64 + "." + payloadBase64;
         byte[] contentBytes = content.getBytes();
         byte[] signature = SecurityUtil.getInstance()
             .sign(Signature.getInstance("SHA256withRSA"), contentBytes, privateKey);
-        return content + "." + Base64.encodeUrlSafe(signature);
+        return content + "." + Base64.getUrlEncoder().encodeToString(signature);
     }
 
 
