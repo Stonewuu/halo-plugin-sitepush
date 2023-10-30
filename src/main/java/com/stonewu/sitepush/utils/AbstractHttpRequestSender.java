@@ -35,8 +35,9 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
     @Override
     public Mono<HttpResponse> request(String requestUrl, HttpMethod httpMethod,
         HttpHeaders httpHeaders, String body) {
-        httpClient = httpClient.protocol(HttpProtocol.HTTP11).baseUrl(requestUrl);
+        httpClient = httpClient.protocol(HttpProtocol.HTTP11);
         return getRequestSender(httpMethod, httpHeaders)
+            .uri(requestUrl)
             .send(ByteBufFlux.fromString(Mono.just(body)))
             .responseSingle((response, byteBufMono) -> Mono.just(
                 new HttpResponse(response.status().code(), byteBufMono.asString())));
