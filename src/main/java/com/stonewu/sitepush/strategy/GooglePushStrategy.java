@@ -57,12 +57,13 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
     @Override
     protected Mono<HttpResponse> request(String siteUrl, String pageLink,
         PushSettingProvider settingProvider) throws Exception {
-        log.info("Pushing to google webmasters: {}", PUSH_ENDPOINT);
+        String pushBodyUrl = siteUrl + pageLink;
+        log.info("Pushing to google webmasters: {}", pushBodyUrl);
         String token = GooglePushTokenCreator.createToken(
             JsonUtils.jsonToObject(settingProvider.getAccess(),
                 GooglePushTokenCreator.ServiceAccountCredentials.class),
             URI.create(PUSH_ENDPOINT));
-        return publish(siteUrl + pageLink, token);
+        return publish(pushBodyUrl, token);
     }
 
     public Mono<HttpResponse> publish(String url, String token) {

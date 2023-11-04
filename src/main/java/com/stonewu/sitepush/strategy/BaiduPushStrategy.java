@@ -42,9 +42,10 @@ public class BaiduPushStrategy extends AbstractPushStrategy implements PushStrat
         PushSettingProvider settingProvider)
         throws IOException, ExecutionException, InterruptedException {
         String baiduPushUrl = String.format(PUSH_ENDPOINT, siteUrl, settingProvider.getAccess());
-        log.info("Pushing to baidu webmasters: {}", baiduPushUrl);
+        String pushBodyUrl = siteUrl + pageLink;
+        log.info("Pushing to baidu webmasters: {}", pushBodyUrl);
         return httpRequestSender.request(baiduPushUrl, HttpMethod.POST,
             new DefaultHttpHeaders(),
-            siteUrl + pageLink);
+            pushBodyUrl);
     }
 }
