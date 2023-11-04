@@ -48,10 +48,11 @@ public class BingPushStrategy extends AbstractPushStrategy implements PushStrate
         PushSettingProvider settingProvider)
         throws IOException, ExecutionException, InterruptedException {
         String bingPushUrl = String.format(PUSH_ENDPOINT, settingProvider.getAccess());
-        log.info("Pushing to bing webmasters: {}", bingPushUrl);
+        String pushBodyUrl = siteUrl + pageLink;
+        log.info("Pushing to bing webmasters: {}", pushBodyUrl);
         BingPushBody bingPushBody = new BingPushBody();
         bingPushBody.setSiteUrl(siteUrl);
-        bingPushBody.setUrlList(List.of(siteUrl + pageLink));
+        bingPushBody.setUrlList(List.of(pushBodyUrl));
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
         return httpRequestSender.request(bingPushUrl, HttpMethod.POST, httpHeaders,
