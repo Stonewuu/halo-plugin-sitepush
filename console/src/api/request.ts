@@ -1,9 +1,9 @@
-import type {AxiosInstance} from 'axios'
-import axios from 'axios'
+import type { AxiosInstance } from "axios";
+import axios from "axios";
 
-const service : AxiosInstance = axios.create({
-    baseURL: '/',
-    timeout: 1000,
-})
+const service: AxiosInstance = axios.create({
+  baseURL: "/",
+  timeout: 1000,
+});
 
-export default service
+export default service;
