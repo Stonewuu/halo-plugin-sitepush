@@ -103,11 +103,12 @@ spec:
           id: baiduProxyAuthEnable
           key: baiduProxyAuthEnable
           value: false
-          option:
+          options:
             - label: 启用
               value: true
             - label: 关闭
               value: false
+
         - $formkit: text
           if: $get(baiduProxyAuthEnable).value
           name: baiduProxyUsername
@@ -202,7 +203,7 @@ spec:
           id: bingProxyAuthEnable
           key: bingProxyAuthEnable
           value: false
-          option:
+          options:
             - label: 启用
               value: true
             - label: 关闭
@@ -304,7 +305,7 @@ spec:
           id: googleProxyAuthEnable
           key: googleProxyAuthEnable
           value: false
-          option:
+          options:
             - label: 启用
               value: true
             - label: 关闭
