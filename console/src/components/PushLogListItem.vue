@@ -83,7 +83,7 @@ const stateText = computed(() => {
               </span>
             </div>
             <a
-              v-tooltip="'去搜索引擎检查是否搜录'"
+              v-tooltip="'去搜索引擎检查是否收录'"
               :href="getSearchEngine?.checkUrl"
               class="text-xs text-gray-600 truncate"
               target="_blank"
