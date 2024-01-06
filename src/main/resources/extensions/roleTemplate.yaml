@@ -1,0 +1,33 @@
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: role-template-sitepush-view
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "SitePush Management"
+    rbac.authorization.halo.run/display-name: "站点推送查看"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:sitepush:view"]
+rules:
+  - apiGroups: [ "sitepush.halo.run" ]
+    resources: [ "pushLogs" , "pushUniques" ]
+    verbs: [ "get", "list" ]
+---
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: role-template-sitepush-manage
+  labels:
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/module: "SitePush Management"
+    rbac.authorization.halo.run/display-name: "站点推送管理"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:sitepush:manage"]
+    rbac.authorization.halo.run/dependencies: |
+      ["role-template-sitepush-view"]
+rules:
+  - apiGroups: [ "sitepush.halo.run" ]
+    resources: [ "pushLogs" , "pushUniques" ]
+    verbs: [ "create", "patch", "update", "delete", "deletecollection" ]
