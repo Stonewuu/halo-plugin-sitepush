@@ -16,6 +16,7 @@ export default definePlugin({
         meta: {
           title: "站点收录推送",
           searchable: true,
+          permissions: ["plugin:sitepush:view"],
           menu: {
             name: "站点收录推送",
             group: "tool",

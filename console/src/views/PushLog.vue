@@ -59,7 +59,7 @@ function handleClear() {
       <IconUpload class="mr-2 self-center" />
     </template>
     <template #actions>
-      <VButton type="danger" @click="handleClear()"> 清空 </VButton>
+      <VButton v-permission="['plugin:sitepush:manage']" type="danger" @click="handleClear()"> 清空 </VButton>
     </template>
   </VPageHeader>
   <div class="m-0 md:m-4">
@@ -75,6 +75,7 @@ function handleClear() {
             <VSpace>
               <VButton :loading="isFetching" @click="refetch()"> 刷新 </VButton>
               <VButton
+                v-permission="['plugin:sitepush:manage']"
                 type="secondary"
                 @click="$router.push('/plugins/PluginSitePush?tab=basic')"
               >
