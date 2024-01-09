@@ -11,6 +11,7 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -44,15 +45,18 @@ public class BingPushStrategy extends AbstractPushStrategy implements PushStrate
     }
 
     @Override
-    protected Mono<HttpResponse> request(String siteUrl, String pageLink,
-        PushSettingProvider settingProvider)
+    protected Mono<HttpResponse> request(PushSettingProvider settingProvider, String siteUrl, String... pageLinks)
         throws IOException, ExecutionException, InterruptedException {
         String bingPushUrl = String.format(PUSH_ENDPOINT, settingProvider.getAccess());
-        String pushBodyUrl = siteUrl + pageLink;
-        log.info("Pushing to bing webmasters: {}", pushBodyUrl);
+        String[] pushBodyUrls = new String[pageLinks.length];
+        for (int i = 0; i < pageLinks.length; i++) {
+            pushBodyUrls[i] = siteUrl + pageLinks[i];
+        }
+        String pushUrls = Arrays.toString(pushBodyUrls);
+        log.info("Pushing to bing webmasters: {}", pushUrls);
         BingPushBody bingPushBody = new BingPushBody();
         bingPushBody.setSiteUrl(siteUrl);
-        bingPushBody.setUrlList(List.of(pushBodyUrl));
+        bingPushBody.setUrlList(List.of(pushBodyUrls));
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, "application/json; charset=utf-8");
         return httpRequestSender.request(bingPushUrl, HttpMethod.POST, httpHeaders,

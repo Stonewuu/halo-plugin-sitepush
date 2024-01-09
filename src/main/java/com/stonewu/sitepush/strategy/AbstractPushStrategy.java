@@ -28,23 +28,24 @@ public abstract class AbstractPushStrategy implements PushStrategy {
     }
 
     @Override
-    public int push(String siteUrl, String key, String pageLink) {
+    public int push(String siteUrl, String key, String... pageLink) {
         PushSettingProvider settingProvider = getSettingProvider();
         updateHttpRequestSender(settingProvider);
         String token = settingProvider.getAccess();
         if (settingProvider.isEnable() && StringUtils.hasText(token)) {
             HttpResponse response;
             try {
-                response = request(siteUrl, pageLink, settingProvider).block();
+                response = request(settingProvider, siteUrl, pageLink).block();
                 if (response == null) {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                log.info("Push exception: {}", e.getMessage());
+                log.info("Push exception: {} : {}", getPushType(), e.getMessage());
                 return 0;
             }
             String body = response.body().block();
             log.info("Pushing to {} Result: {}", getPushType(), body);
+            log.info("code: {}", response.code());
             boolean ok = response.code() == 200;
             return ok ? 1 : 0;
         }
@@ -73,6 +74,5 @@ public abstract class AbstractPushStrategy implements PushStrategy {
 
     protected abstract PushSettingProvider getSettingProvider();
 
-    protected abstract Mono<HttpResponse> request(String siteUrl, String pageLink,
-        PushSettingProvider settingProvider) throws Exception;
+    protected abstract Mono<HttpResponse> request(PushSettingProvider settingProvider, String siteUrl, String... pageLinks) throws Exception;
 }
