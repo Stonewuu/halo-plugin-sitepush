@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +35,11 @@ import run.halo.app.infra.utils.JsonUtils;
 @Slf4j
 public class GooglePushStrategy extends AbstractPushStrategy implements PushStrategy {
 
-    public static final String PUSH_ENDPOINT =
-        "https://indexing.googleapis.com/v3/urlNotifications:publish";
+    public static final String GLOBAL_ENDPOINT =
+        "https://indexing.googleapis.com/batch";
+
+    public static final String API_URL = "/v3/urlNotifications:publish";
+
     public static final String UPDATE_TYPE = "URL_UPDATED";
 
     public GooglePushStrategy(DefaultSettingFetcher settingFetcher) {
@@ -55,25 +61,52 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
     }
 
     @Override
-    protected Mono<HttpResponse> request(String siteUrl, String pageLink,
-        PushSettingProvider settingProvider) throws Exception {
-        String pushBodyUrl = siteUrl + pageLink;
-        log.info("Pushing to google webmasters: {}", pushBodyUrl);
+    protected Mono<HttpResponse> request(PushSettingProvider settingProvider, String siteUrl,
+        String... pageLinks) throws Exception {
+        String[] pushBodyUrls = new String[pageLinks.length];
+        List<Map<String, String>> requests = new ArrayList<>();
+        for (int i = 0; i < pageLinks.length; i++) {
+            String url = siteUrl + pageLinks[i];
+            pushBodyUrls[i] = url;
+            Map<String, String> map = new HashMap<>();
+            map.put("url", url);
+            map.put("type", UPDATE_TYPE);
+            requests.add(map);
+        }
+        String pushUrls = Arrays.toString(pushBodyUrls);
+        log.info("Pushing to google webmasters: {}", pushUrls);
         String token = GooglePushTokenCreator.createToken(
             JsonUtils.jsonToObject(settingProvider.getAccess(),
                 GooglePushTokenCreator.ServiceAccountCredentials.class),
-            URI.create(PUSH_ENDPOINT));
-        return publish(pushBodyUrl, token);
-    }
-
-    public Mono<HttpResponse> publish(String url, String token) {
-        GooglePushBody body = new GooglePushBody();
-        body.setType(UPDATE_TYPE);
-        body.setUrl(url);
+            URI.create(GLOBAL_ENDPOINT));
+        String boundary = "===============7330845974216740156==";
+        String batchBody = buildBatchBody(requests, boundary);
         HttpHeaders headers = new DefaultHttpHeaders();
         headers.add(HttpHeaderNames.AUTHORIZATION, "Bearer " + token);
-        return httpRequestSender.request(PUSH_ENDPOINT, HttpMethod.POST, headers,
-            JsonUtils.objectToJson(body));
+        headers.add(HttpHeaderNames.CONTENT_TYPE, "multipart/mixed; boundary=" + boundary);
+        headers.add(HttpHeaderNames.ACCEPT, "application/json");
+        return httpRequestSender.request(GLOBAL_ENDPOINT, HttpMethod.POST, headers, batchBody);
+    }
+
+
+    private String buildBatchBody(List<Map<String, String>> requests, String boundary) {
+        StringBuilder batchBody = new StringBuilder();
+        int contentId = 1;
+        for (Map<String, String> request : requests) {
+            String requestStr = JsonUtils.objectToJson(request);
+            batchBody.append("--").append(boundary).append("\n")
+                .append("Content-Type: application/http\n")
+                .append("Content-Transfer-Encoding: binary\n")
+                .append("Content-ID: ").append(contentId++).append("\n")
+                .append("\n")
+                .append("POST").append(" ").append(API_URL).append("\n")
+                .append("Content-Type: application/json\r\n")
+                .append("accept: application/json\n")
+                .append("content-length: ").append(requestStr.length()).append("\n")
+                .append(requestStr).append("\n");
+        }
+        batchBody.append("--").append(boundary).append("--");
+        return batchBody.toString();
     }
 
     private static class GooglePushTokenCreator {

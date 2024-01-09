@@ -9,6 +9,6 @@ public interface PushStrategy {
      * @param pageLink 页面绝对访问路径，以/开头，例：/post/new-page
      * @return
      */
-    int push(String siteUrl, String key, String pageLink);
+    int push(String siteUrl, String key, String... pageLink);
 
 }
