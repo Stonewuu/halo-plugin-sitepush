@@ -1,6 +1,5 @@
 package com.stonewu.sitepush.reconciler;
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.service.PushService;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
