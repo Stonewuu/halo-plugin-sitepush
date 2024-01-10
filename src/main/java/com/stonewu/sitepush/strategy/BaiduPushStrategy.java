@@ -1,6 +1,5 @@
 package com.stonewu.sitepush.strategy;
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.BaiduPushSetting;
 import com.stonewu.sitepush.setting.BaiduSettingProvider;
 import com.stonewu.sitepush.setting.PushSettingProvider;
@@ -15,13 +14,14 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import run.halo.app.plugin.SettingFetcher;
 
 @Component
 @Slf4j
 public class BaiduPushStrategy extends AbstractPushStrategy implements PushStrategy {
     public static final String PUSH_ENDPOINT = "http://data.zz.baidu.com/urls?site=%s&token=%s";
 
-    public BaiduPushStrategy(DefaultSettingFetcher settingFetcher) {
+    public BaiduPushStrategy(SettingFetcher settingFetcher) {
         super(settingFetcher);
     }
 
@@ -34,7 +34,7 @@ public class BaiduPushStrategy extends AbstractPushStrategy implements PushStrat
     @Override
     protected PushSettingProvider getSettingProvider() {
         BaiduPushSetting baiduPushSetting =
-            settingFetcher.fetch(BaiduPushSetting.CONFIG_MAP_NAME, BaiduPushSetting.GROUP,
+            settingFetcher.fetch(BaiduPushSetting.GROUP,
                 BaiduPushSetting.class).orElseGet(BaiduPushSetting::new);
 
         return new BaiduSettingProvider(baiduPushSetting);

@@ -1,15 +1,15 @@
 package com.stonewu.sitepush.reconciler;
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.service.PushService;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.SinglePage;
-import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
+import run.halo.app.plugin.SettingFetcher;
 
 /**
  * The {@link SinglePagePushReconciler} for route request to specific template <code>page
@@ -23,7 +23,7 @@ import run.halo.app.extension.controller.Reconciler;
 public class SinglePagePushReconciler extends AbstractPushReconciler
     implements Reconciler<Reconciler.Request> {
 
-    public SinglePagePushReconciler(DefaultSettingFetcher settingFetcher, ExtensionClient client,
+    public SinglePagePushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
         PushService pushService) {
         super(settingFetcher, client, pushService);
     }
@@ -36,7 +36,9 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
     }
 
     @Override
-    public Class<? extends AbstractExtension> getExtension() {
-        return SinglePage.class;
+    public Result reconcile(Request request) {
+        Optional<PublishExtension> publishExtension = client.fetch(SinglePage.class, request.name())
+            .map(SinglePageAdapter::new);
+        return reconcile(publishExtension.get());
     }
 }

@@ -1,7 +1,6 @@
 package com.stonewu.sitepush.strategy;
 
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.GooglePushSetting;
 import com.stonewu.sitepush.setting.GooglePushSettingProvider;
 import com.stonewu.sitepush.setting.PushSettingProvider;
@@ -26,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import run.halo.app.infra.utils.JsonUtils;
+import run.halo.app.plugin.SettingFetcher;
 
 /**
  * @author Erzbir
@@ -42,7 +42,7 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
 
     public static final String UPDATE_TYPE = "URL_UPDATED";
 
-    public GooglePushStrategy(DefaultSettingFetcher settingFetcher) {
+    public GooglePushStrategy(SettingFetcher settingFetcher) {
         super(settingFetcher);
     }
 
@@ -53,10 +53,9 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
 
     @Override
     protected PushSettingProvider getSettingProvider() {
-        GooglePushSetting googlePushSetting = settingFetcher.fetch(
-                GooglePushSetting.CONFIG_MAP_NAME,
-                GooglePushSetting.GROUP, GooglePushSetting.class)
-            .orElseGet(GooglePushSetting::new);
+        GooglePushSetting googlePushSetting =
+            settingFetcher.fetch(GooglePushSetting.GROUP, GooglePushSetting.class)
+                .orElseGet(GooglePushSetting::new);
         return new GooglePushSettingProvider(googlePushSetting);
     }
 

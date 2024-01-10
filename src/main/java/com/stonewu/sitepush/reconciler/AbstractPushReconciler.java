@@ -1,35 +1,36 @@
 package com.stonewu.sitepush.reconciler;
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.service.PushService;
 import com.stonewu.sitepush.setting.BasePushSetting;
 import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import run.halo.app.core.extension.content.Post;
 import run.halo.app.core.extension.content.SinglePage;
-import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Reconciler;
+import run.halo.app.plugin.SettingFetcher;
 
 /**
  * @author Erzbir
  * @Data: 2024/1/9 19:25
  */
+@Slf4j
 public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Request> {
-    protected DefaultSettingFetcher settingFetcher;
+    protected SettingFetcher settingFetcher;
 
     protected ExtensionClient client;
 
     protected PushService pushService;
 
-    public AbstractPushReconciler(DefaultSettingFetcher settingFetcher, ExtensionClient client,
+    public AbstractPushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
         PushService pushService) {
         this.settingFetcher = settingFetcher;
         this.client = client;
         this.pushService = pushService;
     }
 
-    private interface PublishExtension {
+    public interface PublishExtension {
         boolean isPublished();
 
         String getSlug();
@@ -39,7 +40,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         String getKind();
     }
 
-    private record PostAdapter(Post post) implements PublishExtension {
+    public record PostAdapter(Post post) implements PublishExtension {
 
         @Override
         public boolean isPublished() {
@@ -62,7 +63,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         }
     }
 
-    private record SinglePageAdapter(SinglePage singlePage) implements PublishExtension {
+    public record SinglePageAdapter(SinglePage singlePage) implements PublishExtension {
 
         @Override
         public boolean isPublished() {
@@ -85,42 +86,55 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         }
     }
 
-    @Override
-    public Result reconcile(Request request) {
-        return client.fetch(getExtension(), request.name())
-            .map(extension -> {
-                PublishExtension publishExtension;
-                if (extension instanceof Post post) {
-                    publishExtension = new PostAdapter(post);
-                } else if (extension instanceof SinglePage singlePage) {
-                    publishExtension = new SinglePageAdapter(singlePage);
-                } else {
-                    throw new RuntimeException("不支持此类型");
-                }
-                BasePushSetting basePushSetting =
-                    settingFetcher.fetch(BasePushSetting.CONFIG_MAP_NAME, BasePushSetting.GROUP,
-                        BasePushSetting.class).orElseGet(BasePushSetting::new);
-                int retryInterval = basePushSetting.getRetryInterval();
-                String siteUrl = basePushSetting.getSiteUrl();
-                if (basePushSetting.getEnable() && StringUtils.hasText(siteUrl)) {
-                    if (publishExtension.isPublished()) {
-                        String slug = publishExtension.getSlug();
-                        String permalink = publishExtension.getPermalink();
-                        boolean allPush =
-                            pushService.isAllPush(siteUrl, publishExtension.getKind() + ":" + slug,
-                                permalink);
-                        if (allPush) {
-                            return Result.doNotRetry();
-                        }
-                    }
-                    // 未完整推送完成时，10分钟后重试
-                    return new Result(true, Duration.ofMinutes(retryInterval));
-                }
-                // 未启用插件时，忽略本次通知，10分钟后重试
-                return new Result(true, Duration.ofMinutes(retryInterval));
-            })
-            .orElseGet(() -> new Result(false, null));
+    protected Result reconcile(PublishExtension extension) {
+        if (extension == null) {
+            return new Result(false, null);
+        }
+        BasePushSetting basePushSetting = getBasePushSetting();
+        if (shouldRetry(basePushSetting, extension)) {
+            return new Result(true, Duration.ofMinutes(basePushSetting.getRetryInterval()));
+        } else {
+            return Result.doNotRetry();
+        }
     }
 
-    public abstract Class<? extends AbstractExtension> getExtension();
+    private BasePushSetting getBasePushSetting() {
+        return settingFetcher.fetch(BasePushSetting.GROUP, BasePushSetting.class)
+            .orElseGet(BasePushSetting::new);
+    }
+
+    private boolean shouldRetry(BasePushSetting basePushSetting,
+        PublishExtension publishExtension) {
+        if (basePushSetting.getEnable() && StringUtils.hasText(basePushSetting.getSiteUrl())) {
+            try {
+                if (publishExtension.isPublished()) {
+                    String slug = publishExtension.getSlug();
+                    String permalink = publishExtension.getPermalink();
+                    log.error(publishExtension.getKind() + permalink);
+                    if (!checkIllegal(slug, permalink)) {
+                        return true;
+                    }
+                    boolean allPush = pushService.pushUseAllStrategy(basePushSetting.getSiteUrl(),
+                        publishExtension.getKind() + ":" + slug, permalink);
+                    return !allPush;
+                }
+            } catch (Throwable e) {
+                log.error(e.getMessage());
+                return true;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkIllegal(String key, String... pageLinks) {
+        if (!StringUtils.hasText(key) || pageLinks == null || pageLinks.length == 0) {
+            return false;
+        }
+        for (String pageLink : pageLinks) {
+            if (!StringUtils.hasText(pageLink)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
