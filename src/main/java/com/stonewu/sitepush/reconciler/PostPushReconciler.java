@@ -2,15 +2,16 @@ package com.stonewu.sitepush.reconciler;
 
 import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.service.PushService;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.Category;
 import run.halo.app.core.extension.content.Post;
-import run.halo.app.extension.AbstractExtension;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
+import run.halo.app.plugin.SettingFetcher;
 
 /**
  * Reconciler for {@link Category}.
@@ -23,14 +24,16 @@ import run.halo.app.extension.controller.Reconciler;
 public class PostPushReconciler extends AbstractPushReconciler
     implements Reconciler<Reconciler.Request> {
 
-    public PostPushReconciler(DefaultSettingFetcher settingFetcher, ExtensionClient client,
+    public PostPushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
         PushService pushService) {
         super(settingFetcher, client, pushService);
     }
 
     @Override
-    public Class<? extends AbstractExtension> getExtension() {
-        return Post.class;
+    public Result reconcile(Request request) {
+        Optional<PublishExtension> publishExtension = client.fetch(Post.class, request.name())
+            .map(PostAdapter::new);
+        return reconcile(publishExtension.get());
     }
 
     @Override

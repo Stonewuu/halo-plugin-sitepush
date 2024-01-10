@@ -1,6 +1,5 @@
 package com.stonewu.sitepush.strategy;
 
-import com.stonewu.sitepush.DefaultSettingFetcher;
 import com.stonewu.sitepush.setting.PushSettingProvider;
 import com.stonewu.sitepush.utils.AuthProxyHttpRequestSender;
 import com.stonewu.sitepush.utils.DefaultHttpRequestSender;
@@ -12,6 +11,7 @@ import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
+import run.halo.app.plugin.SettingFetcher;
 
 /**
  * @author Erzbir
@@ -19,23 +19,23 @@ import reactor.core.publisher.Mono;
  */
 @Slf4j
 public abstract class AbstractPushStrategy implements PushStrategy {
-    protected final DefaultSettingFetcher settingFetcher;
+    protected final SettingFetcher settingFetcher;
 
     protected HttpRequestSender httpRequestSender;
 
-    public AbstractPushStrategy(DefaultSettingFetcher settingFetcher) {
+    public AbstractPushStrategy(SettingFetcher settingFetcher) {
         this.settingFetcher = settingFetcher;
     }
 
     @Override
-    public int push(String siteUrl, String key, String... pageLink) {
+    public int push(String siteUrl, String key, String... pageLinks) {
         PushSettingProvider settingProvider = getSettingProvider();
         updateHttpRequestSender(settingProvider);
         String token = settingProvider.getAccess();
         if (settingProvider.isEnable() && StringUtils.hasText(token)) {
             HttpResponse response;
             try {
-                response = request(settingProvider, siteUrl, pageLink).block();
+                response = request(settingProvider, siteUrl, pageLinks).block();
                 if (response == null) {
                     throw new Exception();
                 }
@@ -74,5 +74,6 @@ public abstract class AbstractPushStrategy implements PushStrategy {
 
     protected abstract PushSettingProvider getSettingProvider();
 
-    protected abstract Mono<HttpResponse> request(PushSettingProvider settingProvider, String siteUrl, String... pageLinks) throws Exception;
+    protected abstract Mono<HttpResponse> request(PushSettingProvider settingProvider,
+        String siteUrl, String... pageLinks) throws Exception;
 }
