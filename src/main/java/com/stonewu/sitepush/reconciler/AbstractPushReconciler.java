@@ -3,6 +3,7 @@ package com.stonewu.sitepush.reconciler;
 import com.stonewu.sitepush.service.PushService;
 import com.stonewu.sitepush.setting.BasePushSetting;
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import run.halo.app.extension.ExtensionClient;
@@ -16,10 +17,11 @@ import run.halo.app.plugin.SettingFetcher;
 @Slf4j
 public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Request> {
     protected SettingFetcher settingFetcher;
-
     protected ExtensionClient client;
-
     protected PushService pushService;
+
+    private final AtomicInteger currentReGetTimes = new AtomicInteger();
+    private static final int MAX_GET_TIMES = 10;
 
     public AbstractPushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
         PushService pushService) {
@@ -42,6 +44,19 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         if (extension == null) {
             return new Result(false, null);
         }
+
+        // 由于未知原因, 自定义的 Reconciler 在获取 SinglePage 时 SinglePage 还未初始化完成,导致获取到的 permalink 为 null
+        // 这里的写法为了保证引用的 SinglePage 或是其他 Extension 是完全初始化的
+        if (extension.getPermalink() == null) {
+            // 为了防止出现一直为 null 的情况
+            if (currentReGetTimes.get() >= MAX_GET_TIMES) {
+                return new Result(false, null);
+            }
+            currentReGetTimes.addAndGet(1);
+            return new Result(true, Duration.ZERO);
+        }
+        currentReGetTimes.set(0);
+
         BasePushSetting basePushSetting = getBasePushSetting();
         if (shouldRetry(basePushSetting, extension)) {
             return new Result(true, Duration.ofMinutes(basePushSetting.getRetryInterval()));
