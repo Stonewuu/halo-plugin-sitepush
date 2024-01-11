@@ -5,7 +5,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import run.halo.app.core.extension.content.SinglePage;
-import run.halo.app.extension.ExtensionClient;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.controller.Controller;
 import run.halo.app.extension.controller.ControllerBuilder;
 import run.halo.app.extension.controller.Reconciler;
@@ -23,7 +23,7 @@ import run.halo.app.plugin.SettingFetcher;
 public class SinglePagePushReconciler extends AbstractPushReconciler
     implements Reconciler<Reconciler.Request> {
 
-    public SinglePagePushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
+    public SinglePagePushReconciler(SettingFetcher settingFetcher, ReactiveExtensionClient client,
         PushService pushService) {
         super(settingFetcher, client, pushService);
     }
@@ -38,6 +38,7 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
     @Override
     public Result reconcile(Request request) {
         Optional<PublishExtension> publishExtension = client.fetch(SinglePage.class, request.name())
+            .blockOptional()
             .map(SinglePageAdapter::new);
         return reconcile(publishExtension.get());
     }

@@ -1,18 +1,15 @@
 package com.stonewu.sitepush;
 
+import com.stonewu.sitepush.scheme.PushLog;
+import com.stonewu.sitepush.scheme.PushUnique;
 import lombok.extern.slf4j.Slf4j;
 import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
-import run.halo.app.extension.ExtensionClient;
+import reactor.core.publisher.Flux;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
 import run.halo.app.plugin.BasePlugin;
-import com.stonewu.sitepush.scheme.PushLog;
-import com.stonewu.sitepush.scheme.PushUnique;
-
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * 站点收录推送插件
@@ -25,11 +22,10 @@ import java.util.List;
 public class SitePushPlugin extends BasePlugin {
     String pathPrefix = "/root/.halo2/";
     private final SchemeManager schemeManager;
-
-    private final ExtensionClient client;
+    private final ReactiveExtensionClient client;
 
     public SitePushPlugin(PluginWrapper wrapper, SchemeManager schemeManager,
-                          ExtensionClient client) {
+        ReactiveExtensionClient client) {
         super(wrapper);
         this.schemeManager = schemeManager;
         this.client = client;
@@ -37,29 +33,33 @@ public class SitePushPlugin extends BasePlugin {
 
     @Override
     public void start() {
-        schemeManager.register(PushLog.class);
-        schemeManager.register(PushUnique.class);
-        List<PushUnique> list = client.list(PushUnique.class, null, null);
-        list.forEach(pushUnique -> {
-            GlobalCache.PUSH_CACHE.put(pushUnique.getCacheKey(), pushUnique);
-        });
-        log.info("成功读取已推送链接 {} 个", list.size());
-        List<PushLog> logList = client.list(PushLog.class, null, null);
-        logList.forEach(pushLog -> {
-            long epochSecond = Instant.now().getEpochSecond();
-            // 每次启动插件删除一个月前的推送日志
-            if (pushLog.getCreateTime() + 60 * 24 * 30 < epochSecond) {
-                client.delete(pushLog);
-            }
-        });
+        registerScheme();
+        loadPushedData();
     }
 
     @Override
     public void stop() {
-        GlobalCache.PUSH_CACHE = new HashMap<>();
+        GlobalCache.PUSH_CACHE.clear();
+        unregisterScheme();
+    }
+
+    private void registerScheme() {
+        schemeManager.register(PushLog.class);
+        schemeManager.register(PushUnique.class);
+    }
+
+    private void unregisterScheme() {
         Scheme pushLogScheme = schemeManager.get(PushLog.class);
         Scheme pushUniqueScheme = schemeManager.get(PushUnique.class);
         schemeManager.unregister(pushLogScheme);
         schemeManager.unregister(pushUniqueScheme);
+    }
+
+    private void loadPushedData() {
+        Flux<PushUnique> fluxPushUnique = client.list(PushUnique.class, null, null);
+        fluxPushUnique.doOnNext(pushUnique ->
+                GlobalCache.PUSH_CACHE.put(pushUnique.getCacheKey(), pushUnique))
+            .subscribe();
+        log.info("成功读取已推送链接 {} 个", fluxPushUnique.count().block());
     }
 }

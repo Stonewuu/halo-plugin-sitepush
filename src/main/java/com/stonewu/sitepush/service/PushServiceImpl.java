@@ -11,14 +11,14 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.Metadata;
+import run.halo.app.extension.ReactiveExtensionClient;
 
 @Component
 @Slf4j
 @AllArgsConstructor
 public class PushServiceImpl implements PushService {
-    private final ExtensionClient client;
+    private final ReactiveExtensionClient client;
 
     private Map<String, PushStrategy> pushStrategyMap;
 
@@ -53,16 +53,16 @@ public class PushServiceImpl implements PushService {
                 pushUnique.setPushStatus(status);
                 GlobalCache.PUSH_CACHE.put(cacheKey, pushUnique);
                 Optional<PushUnique> fetch =
-                    client.fetch(PushUnique.class, pushUnique.getCacheKey());
+                    client.fetch(PushUnique.class, pushUnique.getCacheKey()).blockOptional();
                 if (fetch.isPresent()) {
                     pushUnique = fetch.get();
                     pushUnique.setPushStatus(status);
-                    client.update(pushUnique);
+                    client.update(pushUnique).subscribe();
                 } else {
                     Metadata metadata = new Metadata();
                     metadata.setName(cacheKey);
                     pushUnique.setMetadata(metadata);
-                    client.create(pushUnique);
+                    client.create(pushUnique).subscribe();
                 }
                 PushLog pushLog = new PushLog(Instant.now().getEpochSecond(), siteUrl + permalink,
                     pushStrategy.getPushType(), status);
@@ -70,9 +70,9 @@ public class PushServiceImpl implements PushService {
                 metadata.setName(UUID.randomUUID().toString());
                 pushLog.setMetadata(metadata);
                 if (status == 0) {
-                    client.create(pushLog);
+                    client.create(pushLog).subscribe();
                 } else if (status == 1) {
-                    client.create(pushLog);
+                    client.create(pushLog).subscribe();
                 }
             }
         }
