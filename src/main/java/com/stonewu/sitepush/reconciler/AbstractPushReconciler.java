@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import run.halo.app.extension.ExtensionClient;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.controller.Reconciler;
 import run.halo.app.plugin.SettingFetcher;
 
@@ -17,13 +17,13 @@ import run.halo.app.plugin.SettingFetcher;
 @Slf4j
 public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Request> {
     protected SettingFetcher settingFetcher;
-    protected ExtensionClient client;
+    protected ReactiveExtensionClient client;
     protected PushService pushService;
 
     private final AtomicInteger currentReGetTimes = new AtomicInteger();
     private static final int MAX_GET_TIMES = 10;
 
-    public AbstractPushReconciler(SettingFetcher settingFetcher, ExtensionClient client,
+    public AbstractPushReconciler(SettingFetcher settingFetcher, ReactiveExtensionClient client,
         PushService pushService) {
         this.settingFetcher = settingFetcher;
         this.client = client;
