@@ -31,8 +31,8 @@ spec:
           if: $get(enable).value
           name: retryInterval
           label: 重试间隔时间 (分钟)
-          help: 默认为 10 分钟
-          value: 10
+          help: 默认为 360 分钟
+          value: 360
 
     - group: baidu
       label: 百度收录推送
