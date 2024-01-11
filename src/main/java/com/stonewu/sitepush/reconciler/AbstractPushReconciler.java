@@ -110,7 +110,6 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                 if (publishExtension.isPublished()) {
                     String slug = publishExtension.getSlug();
                     String permalink = publishExtension.getPermalink();
-                    log.error(publishExtension.getKind() + permalink);
                     if (!checkIllegal(slug, permalink)) {
                         return true;
                     }

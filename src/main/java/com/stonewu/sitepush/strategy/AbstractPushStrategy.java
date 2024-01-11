@@ -43,7 +43,7 @@ public abstract class AbstractPushStrategy implements PushStrategy {
                 log.info("Push exception: {} : {}", getPushType(), e.getMessage());
                 return 0;
             }
-            String body = response.body().block();
+            String body = response.body();
             log.info("Pushing to {} Result: {}", getPushType(), body);
             log.info("code: {}", response.code());
             boolean ok = response.code() == 200;

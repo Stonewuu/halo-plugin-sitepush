@@ -3,14 +3,13 @@ package com.stonewu.sitepush.utils;
 
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
+import java.time.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import reactor.core.publisher.Mono;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.client.HttpClient;
-
-import java.time.Duration;
 
 /**
  * @author Erzbir
@@ -39,8 +38,8 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
         return getRequestSender(httpMethod, httpHeaders)
             .uri(requestUrl)
             .send(ByteBufFlux.fromString(Mono.just(body)))
-            .responseSingle((response, byteBufMono) -> Mono.just(
-                new HttpResponse(response.status().code(), byteBufMono.asString())));
+            .responseSingle((response, byteBufMono) -> byteBufMono.map(
+                byteBuf -> new HttpResponse(response.status().code(), byteBuf)));
     }
 
     protected abstract HttpClient.RequestSender getRequestSender(HttpMethod httpMethod,
