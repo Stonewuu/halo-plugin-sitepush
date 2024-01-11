@@ -5,8 +5,6 @@ import com.stonewu.sitepush.setting.BasePushSetting;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
-import run.halo.app.core.extension.content.Post;
-import run.halo.app.core.extension.content.SinglePage;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.controller.Reconciler;
 import run.halo.app.plugin.SettingFetcher;
@@ -38,52 +36,6 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         String getPermalink();
 
         String getKind();
-    }
-
-    public record PostAdapter(Post post) implements PublishExtension {
-
-        @Override
-        public boolean isPublished() {
-            return post.isPublished();
-        }
-
-        @Override
-        public String getSlug() {
-            return post.getSpec().getSlug();
-        }
-
-        @Override
-        public String getPermalink() {
-            return post.getStatus().getPermalink();
-        }
-
-        @Override
-        public String getKind() {
-            return post.getKind();
-        }
-    }
-
-    public record SinglePageAdapter(SinglePage singlePage) implements PublishExtension {
-
-        @Override
-        public boolean isPublished() {
-            return singlePage.isPublished();
-        }
-
-        @Override
-        public String getSlug() {
-            return singlePage.getSpec().getSlug();
-        }
-
-        @Override
-        public String getPermalink() {
-            return singlePage.getStatus().getPermalink();
-        }
-
-        @Override
-        public String getKind() {
-            return singlePage.getKind();
-        }
     }
 
     protected Result reconcile(PublishExtension extension) {
