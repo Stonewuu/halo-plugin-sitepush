@@ -9,7 +9,6 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -45,16 +44,16 @@ public class BaiduPushStrategy extends AbstractPushStrategy implements PushStrat
         String... pageLinks)
         throws IOException, ExecutionException, InterruptedException {
         String baiduPushUrl = String.format(PUSH_ENDPOINT, siteUrl, settingProvider.getAccess());
-        String[] pushBodyUrls = new String[pageLinks.length];
-        for (int i = 0; i < pageLinks.length; i++) {
-            pushBodyUrls[i] = siteUrl + pageLinks[i];
+        StringBuilder pushUrls = new StringBuilder();
+        for (String pageLink : pageLinks) {
+            pushUrls.append(siteUrl).append(pageLink).append("\n");
         }
-        String pushUrls = Arrays.toString(pushBodyUrls);
         HttpHeaders httpHeaders = new DefaultHttpHeaders();
         httpHeaders.add(HttpHeaderNames.CONTENT_TYPE, "text/plain");
-        log.info("Pushing to baidu webmasters: {}", pushUrls);
+        String urls = pushUrls.toString();
+        log.info("Pushing to baidu webmasters: {}", urls);
         return httpRequestSender.request(baiduPushUrl, HttpMethod.POST,
             httpHeaders,
-            pushUrls);
+            urls);
     }
 }
