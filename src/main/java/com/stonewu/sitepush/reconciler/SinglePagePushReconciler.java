@@ -41,4 +41,27 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
             .map(SinglePageAdapter::new);
         return reconcile(publishExtension.get());
     }
+
+    private record SinglePageAdapter(SinglePage singlePage) implements PublishExtension {
+
+        @Override
+        public boolean isPublished() {
+            return singlePage.isPublished();
+        }
+
+        @Override
+        public String getSlug() {
+            return singlePage.getSpec().getSlug();
+        }
+
+        @Override
+        public String getPermalink() {
+            return singlePage.getStatus().getPermalink();
+        }
+
+        @Override
+        public String getKind() {
+            return singlePage.getKind();
+        }
+    }
 }

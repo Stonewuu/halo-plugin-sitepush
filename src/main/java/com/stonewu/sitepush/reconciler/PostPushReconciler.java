@@ -41,4 +41,27 @@ public class PostPushReconciler extends AbstractPushReconciler
             .extension(new Post())
             .build();
     }
+
+    private record PostAdapter(Post post) implements PublishExtension {
+
+        @Override
+        public boolean isPublished() {
+            return post.isPublished();
+        }
+
+        @Override
+        public String getSlug() {
+            return post.getSpec().getSlug();
+        }
+
+        @Override
+        public String getPermalink() {
+            return post.getStatus().getPermalink();
+        }
+
+        @Override
+        public String getKind() {
+            return post.getKind();
+        }
+    }
 }
