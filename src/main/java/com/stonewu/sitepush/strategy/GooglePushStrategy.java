@@ -99,9 +99,9 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
                 .append("Content-ID: ").append(contentId++).append("\n")
                 .append("\n")
                 .append("POST").append(" ").append(API_URL).append("\n")
-                .append("Content-Type: application/json\r\n")
-                .append("accept: application/json\n")
-                .append("content-length: ").append(requestStr.length()).append("\n")
+                .append("Content-Type: application/json").append("\n")
+                .append("accept: application/json").append("\n")
+                .append("\n")
                 .append(requestStr).append("\n");
         }
         batchBody.append("--").append(boundary).append("--");
