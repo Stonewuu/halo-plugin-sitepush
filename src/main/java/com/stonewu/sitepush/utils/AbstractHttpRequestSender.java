@@ -1,6 +1,7 @@
 package com.stonewu.sitepush.utils;
 
 
+import io.netty.channel.ChannelOption;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import java.time.Duration;
@@ -23,7 +24,8 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
 
     protected AbstractHttpRequestSender(int timeOut) {
         this.timeOut = timeOut;
-        httpClient = HttpClient.create();
+        httpClient = HttpClient.create().keepAlive(false)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeOut);
         httpClient.responseTimeout(Duration.ofMillis(timeOut));
     }
 
@@ -39,7 +41,8 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
             .uri(requestUrl)
             .send(ByteBufFlux.fromString(Mono.just(body)))
             .responseSingle((response, byteBufMono) -> byteBufMono.map(
-                byteBuf -> new HttpResponse(response.status().code(), byteBuf)));
+                byteBuf -> new HttpResponse(response.status().code(), byteBuf)))
+            .doOnError(throwable -> new HttpResponse(500, throwable.getMessage()));
     }
 
     protected abstract HttpClient.RequestSender getRequestSender(HttpMethod httpMethod,
