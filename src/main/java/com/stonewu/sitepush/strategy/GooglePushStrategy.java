@@ -24,6 +24,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.infra.utils.JsonUtils;
 import run.halo.app.plugin.SettingFetcher;
 
@@ -42,8 +43,8 @@ public class GooglePushStrategy extends AbstractPushStrategy implements PushStra
 
     public static final String UPDATE_TYPE = "URL_UPDATED";
 
-    public GooglePushStrategy(SettingFetcher settingFetcher) {
-        super(settingFetcher);
+    public GooglePushStrategy(SettingFetcher settingFetcher, ReactiveExtensionClient client) {
+        super(settingFetcher, client);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.stonewu.sitepush.strategy;
 
+import com.stonewu.sitepush.scheme.PushLog;
 import com.stonewu.sitepush.setting.PushSettingProvider;
 import com.stonewu.sitepush.utils.AuthProxyHttpRequestSender;
 import com.stonewu.sitepush.utils.DefaultHttpRequestSender;
@@ -8,9 +9,13 @@ import com.stonewu.sitepush.utils.HttpResponse;
 import com.stonewu.sitepush.utils.Proxy;
 import com.stonewu.sitepush.utils.ProxyHttpRequestSender;
 import java.net.InetSocketAddress;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
+import run.halo.app.extension.Metadata;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.plugin.SettingFetcher;
 
 /**
@@ -20,11 +25,13 @@ import run.halo.app.plugin.SettingFetcher;
 @Slf4j
 public abstract class AbstractPushStrategy implements PushStrategy {
     protected final SettingFetcher settingFetcher;
+    protected final ReactiveExtensionClient client;
 
     protected HttpRequestSender httpRequestSender;
 
-    public AbstractPushStrategy(SettingFetcher settingFetcher) {
+    public AbstractPushStrategy(SettingFetcher settingFetcher, ReactiveExtensionClient client) {
         this.settingFetcher = settingFetcher;
+        this.client = client;
     }
 
     @Override
@@ -46,8 +53,16 @@ public abstract class AbstractPushStrategy implements PushStrategy {
             String body = response.body();
             log.info("Pushing to {} Result: {}", getPushType(), body);
             log.info("code: {}", response.code());
-            boolean ok = response.code() == 200;
-            return ok ? 1 : 0;
+            boolean status = response.code() == 200;
+            for (String pageLink : pageLinks) {
+                PushLog pushLog = new PushLog(Instant.now().getEpochSecond(), siteUrl + pageLink,
+                    getPushType(), status ? 1 : 0, response.body());
+                Metadata metadata = new Metadata();
+                metadata.setName(UUID.randomUUID().toString());
+                pushLog.setMetadata(metadata);
+                client.create(pushLog).subscribe();
+            }
+            return status ? 1 : 0;
         }
         return -1;
 

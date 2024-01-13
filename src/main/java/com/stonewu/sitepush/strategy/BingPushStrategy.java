@@ -16,6 +16,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.infra.utils.JsonUtils;
 import run.halo.app.plugin.SettingFetcher;
 
@@ -25,9 +26,10 @@ public class BingPushStrategy extends AbstractPushStrategy implements PushStrate
     public static final String PUSH_ENDPOINT =
         "https://ssl.bing.com/webmaster/api.svc/json/SubmitUrlbatch?apikey=%s";
 
-    public BingPushStrategy(SettingFetcher settingFetcher) {
-        super(settingFetcher);
+    public BingPushStrategy(SettingFetcher settingFetcher, ReactiveExtensionClient client) {
+        super(settingFetcher, client);
     }
+
 
     @Override
     public String getPushType() {
