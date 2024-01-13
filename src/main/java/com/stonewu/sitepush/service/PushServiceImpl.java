@@ -69,9 +69,7 @@ public class PushServiceImpl implements PushService {
                 Metadata metadata = new Metadata();
                 metadata.setName(UUID.randomUUID().toString());
                 pushLog.setMetadata(metadata);
-                if (status == 0) {
-                    client.create(pushLog).subscribe();
-                } else if (status == 1) {
+                if (status == 0 || status == 1) {
                     client.create(pushLog).subscribe();
                 }
             }

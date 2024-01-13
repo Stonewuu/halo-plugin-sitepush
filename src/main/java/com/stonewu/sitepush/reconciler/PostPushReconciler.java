@@ -30,10 +30,10 @@ public class PostPushReconciler extends AbstractPushReconciler
 
     @Override
     public Result reconcile(Request request) {
-        Optional<PublishExtension> publishExtension = client.fetch(Post.class, request.name())
+        PublishExtension publishExtension = client.fetch(Post.class, request.name())
             .blockOptional()
-            .map(PostAdapter::new);
-        return reconcile(publishExtension.get());
+            .map(PostAdapter::new).get();
+        return reconcile(publishExtension);
     }
 
     @Override
