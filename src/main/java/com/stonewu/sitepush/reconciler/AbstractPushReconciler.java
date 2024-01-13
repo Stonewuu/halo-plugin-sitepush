@@ -2,13 +2,15 @@ package com.stonewu.sitepush.reconciler;
 
 import com.stonewu.sitepush.service.PushService;
 import com.stonewu.sitepush.setting.BasePushSetting;
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.controller.Reconciler;
 import run.halo.app.plugin.SettingFetcher;
+
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Erzbir
@@ -20,11 +22,12 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
     protected ReactiveExtensionClient client;
     protected PushService pushService;
 
-    private final AtomicInteger currentReGetTimes = new AtomicInteger();
+    private final AtomicInteger currentReGetTimes = new AtomicInteger(0);
     private static final int MAX_GET_TIMES = 10;
+    private final AtomicBoolean isFirst = new AtomicBoolean(true);
 
     public AbstractPushReconciler(SettingFetcher settingFetcher, ReactiveExtensionClient client,
-        PushService pushService) {
+                                  PushService pushService) {
         this.settingFetcher = settingFetcher;
         this.client = client;
         this.pushService = pushService;
@@ -41,11 +44,17 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
     }
 
     protected Result reconcile(PublishExtension extension) {
+        // 保证获取到的是最新的 extension
+        if (isFirst.get()) {
+            isFirst.set(false);
+            return new Result(true, Duration.ofMillis(100));
+        }
+        isFirst.set(true);
+
         if (extension == null) {
             return new Result(false, null);
         }
 
-        // 由于未知原因, 自定义的 Reconciler 在获取 SinglePage 时 SinglePage 还未初始化完成,导致获取到的 permalink 为 null
         // 这里的写法为了保证引用的 SinglePage 或是其他 Extension 是完全初始化的
         if (extension.getPermalink() == null) {
             // 为了防止出现一直为 null 的情况
@@ -53,7 +62,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                 return new Result(false, null);
             }
             currentReGetTimes.addAndGet(1);
-            return new Result(true, Duration.ZERO);
+            return new Result(true, Duration.ofMillis(100));
         }
         currentReGetTimes.set(0);
 
@@ -67,11 +76,11 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
 
     private BasePushSetting getBasePushSetting() {
         return settingFetcher.fetch(BasePushSetting.GROUP, BasePushSetting.class)
-            .orElseGet(BasePushSetting::new);
+                .orElseGet(BasePushSetting::new);
     }
 
     private boolean shouldRetry(BasePushSetting basePushSetting,
-        PublishExtension publishExtension) {
+                                PublishExtension publishExtension) {
         if (basePushSetting.getEnable() && StringUtils.hasText(basePushSetting.getSiteUrl())) {
             try {
                 if (publishExtension.isPublished()) {
@@ -81,7 +90,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                         return true;
                     }
                     boolean allPush = pushService.pushUseAllStrategy(basePushSetting.getSiteUrl(),
-                        publishExtension.getKind() + ":" + slug, permalink);
+                            publishExtension.getKind() + ":" + slug, permalink);
                     return !allPush;
                 }
             } catch (Throwable e) {
