@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.plugin.SettingFetcher;
 
 @Component
@@ -20,9 +21,10 @@ import run.halo.app.plugin.SettingFetcher;
 public class BaiduPushStrategy extends AbstractPushStrategy implements PushStrategy {
     public static final String PUSH_ENDPOINT = "http://data.zz.baidu.com/urls?site=%s&token=%s";
 
-    public BaiduPushStrategy(SettingFetcher settingFetcher) {
-        super(settingFetcher);
+    public BaiduPushStrategy(SettingFetcher settingFetcher, ReactiveExtensionClient client) {
+        super(settingFetcher, client);
     }
+
 
     @Override
     public String getPushType() {

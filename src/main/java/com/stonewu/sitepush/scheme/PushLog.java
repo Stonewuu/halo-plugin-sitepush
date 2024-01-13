@@ -30,4 +30,7 @@ public class PushLog extends AbstractExtension {
 
     @Schema()
     private int pushStatus;
+
+    @Schema()
+    private String remark;
 }

@@ -11,6 +11,7 @@ export interface PushLogs {
   apiVersion: "todo.plugin.halo.run/v1alpha1"; // apiVersion=自定义模型的 group/version
   kind: "PushLog";
   metadata: Metadata;
+  remark: string;
 }
 
 /**

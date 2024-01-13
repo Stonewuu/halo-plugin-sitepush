@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { timeAgo, formatDatetime } from "@/utils/date";
-import type { PushLogs } from "../types";
-import { VEntity, VEntityField, VStatusDot } from "@halo-dev/components";
-import { computed, type Component } from "vue";
+import {formatDatetime, timeAgo} from "@/utils/date";
+import type {PushLogs} from "../types";
+import {VEntity, VEntityField, VStatusDot} from "@halo-dev/components";
+import {type Component, computed} from "vue";
 import SimpleIconsBaidu from "~icons/simple-icons/baidu";
 import LogosGoogleIcon from "~icons/logos/google-icon";
 import LogosBing from "~icons/logos/bing";
@@ -93,9 +93,12 @@ const stateText = computed(() => {
           </div>
         </template>
       </VEntityField>
-      <VEntityField :description="pushLog.pushStatus">
+      <VEntityField
+        v-tooltip="pushLog.remark"
+        :description="pushLog.pushStatus"
+      >
         <template #description>
-          <VStatusDot :state="state" :text="stateText" />
+          <VStatusDot :state="state" :text="stateText"/>
         </template>
       </VEntityField>
     </template>
