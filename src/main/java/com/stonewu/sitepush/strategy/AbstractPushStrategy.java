@@ -44,28 +44,33 @@ public abstract class AbstractPushStrategy implements PushStrategy {
             try {
                 response = request(settingProvider, siteUrl, pageLinks).block();
                 if (response == null) {
-                    throw new Exception();
+                    throw new Exception("response is null");
                 }
             } catch (Exception e) {
                 log.info("Push exception: {} : {}", getPushType(), e.getMessage());
+                recordPushLogs(0, e.getMessage(), siteUrl, pageLinks);
                 return 0;
             }
             String body = response.body();
             log.info("Pushing to {} Result: {}", getPushType(), body);
             log.info("code: {}", response.code());
             boolean status = response.code() == 200;
-            for (String pageLink : pageLinks) {
-                PushLog pushLog = new PushLog(Instant.now().getEpochSecond(), siteUrl + pageLink,
-                    getPushType(), status ? 1 : 0, response.body());
-                Metadata metadata = new Metadata();
-                metadata.setName(UUID.randomUUID().toString());
-                pushLog.setMetadata(metadata);
-                client.create(pushLog).subscribe();
-            }
+            recordPushLogs(status ? 1 : 0, body, siteUrl, pageLinks);
             return status ? 1 : 0;
         }
         return -1;
 
+    }
+
+    private void recordPushLogs(int status, String remark, String siteUrl, String... pageLinks) {
+        for (String pageLink : pageLinks) {
+            PushLog pushLog = new PushLog(Instant.now().getEpochSecond(), siteUrl + pageLink,
+                getPushType(), status, remark);
+            Metadata metadata = new Metadata();
+            metadata.setName(UUID.randomUUID().toString());
+            pushLog.setMetadata(metadata);
+            client.create(pushLog).subscribe();
+        }
     }
 
     /**
