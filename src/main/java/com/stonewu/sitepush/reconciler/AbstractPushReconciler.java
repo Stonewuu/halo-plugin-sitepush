@@ -2,15 +2,14 @@ package com.stonewu.sitepush.reconciler;
 
 import com.stonewu.sitepush.service.PushService;
 import com.stonewu.sitepush.setting.BasePushSetting;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.controller.Reconciler;
 import run.halo.app.plugin.SettingFetcher;
-
-import java.time.Duration;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Erzbir
@@ -27,7 +26,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
     private final AtomicBoolean isFirst = new AtomicBoolean(true);
 
     public AbstractPushReconciler(SettingFetcher settingFetcher, ReactiveExtensionClient client,
-                                  PushService pushService) {
+        PushService pushService) {
         this.settingFetcher = settingFetcher;
         this.client = client;
         this.pushService = pushService;
@@ -89,8 +88,9 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                     if (!checkIllegal(slug, permalink)) {
                         return true;
                     }
-                    boolean allPush = pushService.pushUseAllStrategy(basePushSetting.getSiteUrl(),
-                            publishExtension.getKind() + ":" + slug, permalink);
+                    String siteUrl = basePushSetting.getSiteUrl().trim();
+                    boolean allPush = pushService.pushUseAllStrategy(siteUrl,
+                        publishExtension.getKind() + ":" + slug, permalink);
                     return !allPush;
                 }
             } catch (Throwable e) {
