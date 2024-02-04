@@ -3,7 +3,7 @@ import axios from "axios";
 
 const service: AxiosInstance = axios.create({
   baseURL: "/",
-  timeout: 1000,
+  timeout: 30 * 1000,
 });
 
 export default service;
