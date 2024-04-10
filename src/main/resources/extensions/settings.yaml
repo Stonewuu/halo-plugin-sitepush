@@ -34,6 +34,19 @@ spec:
           help: 默认为 360 分钟
           value: 360
 
+        - $formkit: number
+          if: $get(enable).value
+          name: cleanOldLogDataDays
+          label: 每 1 小时清理指定天数前的旧推送 log 数据
+          help: 当值大于 0 才会清理，单位（天）
+          value: 0
+        - $formkit: number
+          if: $get(enable).value
+          name: cleanOldUniqueDataDays
+          label: 每 1 小时清理指定天数前的旧推送 key 数据
+          help: 当值大于 0 才会清理，单位（天），被清理的 url 后续会再次触发推送
+          value: 0
+
     - group: baidu
       label: 百度收录推送
       formSchema:
