@@ -15,4 +15,8 @@ public class BasePushSetting {
     private String siteUrl = "";
 
     private Integer retryInterval = 360;
+
+    private Integer cleanOldLogDataDays = 0;
+
+    private Integer cleanOldUniqueDataDays = 0;
 }
