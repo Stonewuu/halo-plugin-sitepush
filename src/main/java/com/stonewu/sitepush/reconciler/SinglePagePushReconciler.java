@@ -4,6 +4,7 @@ import com.stonewu.sitepush.service.PushService;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import run.halo.app.core.extension.content.Post;
 import run.halo.app.core.extension.content.SinglePage;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.controller.Controller;
@@ -63,6 +64,16 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
         @Override
         public String getKind() {
             return singlePage.getKind();
+        }
+
+        @Override
+        public boolean isVisible() {
+            return singlePage.getSpec().getVisible().equals(Post.VisibleEnum.PUBLIC);
+        }
+
+        @Override
+        public boolean isObserved() {
+            return singlePage.getMetadata().getVersion().equals(singlePage.getStatus().getObservedVersion());
         }
     }
 }

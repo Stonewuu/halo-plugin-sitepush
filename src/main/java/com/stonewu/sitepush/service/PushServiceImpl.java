@@ -24,7 +24,7 @@ public class PushServiceImpl implements PushService {
     public boolean pushUseAllStrategy(String siteUrl, String slugKey, String... permalinks) {
         boolean allPush = true;
         for (Map.Entry<String, PushStrategy> entry : pushStrategyMap.entrySet()) {
-            allPush = push(siteUrl, entry.getValue(), slugKey, permalinks);
+            allPush = allPush && push(siteUrl, entry.getValue(), slugKey, permalinks);
         }
         return allPush;
     }
@@ -34,15 +34,17 @@ public class PushServiceImpl implements PushService {
     public boolean push(String siteUrl, PushStrategy pushStrategy, String slugKey,
         String... permalinks) {
         String cacheKey = pushStrategy.getPushType() + ":" + slugKey;
-        int status = 0;
+        // 设置默认值为成功
+        boolean allSuccess = true;
         for (String permalink : permalinks) {
             // 没推送过或者推送过但是失败了的
             if (isNeedPush(cacheKey)) {
-                status = pushStrategy.push(siteUrl, slugKey, permalink);
+                int status = pushStrategy.push(siteUrl, slugKey, permalink);
+                allSuccess = allSuccess && status == 1;
                 recordPushResult(pushStrategy.getPushType(), slugKey, cacheKey, status);
             }
         }
-        return status == 1;
+        return allSuccess;
     }
 
     public void recordPushResult(String pushType, String slugKey, String cacheKey, int status) {

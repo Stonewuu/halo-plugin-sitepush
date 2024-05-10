@@ -64,5 +64,17 @@ public class PostPushReconciler extends AbstractPushReconciler
         public String getKind() {
             return post.getKind();
         }
+
+        @Override
+        public boolean isVisible() {
+            return post.getSpec().getVisible().equals(Post.VisibleEnum.PUBLIC);
+        }
+        @Override
+        public boolean isObserved() {
+            if(post.getMetadata() != null && post.getStatus() != null){
+                return post.getMetadata().getVersion().equals(post.getStatus().getObservedVersion());
+            }
+            return false;
+        }
     }
 }

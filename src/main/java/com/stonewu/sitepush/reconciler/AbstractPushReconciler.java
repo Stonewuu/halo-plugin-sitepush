@@ -40,25 +40,22 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         String getPermalink();
 
         String getKind();
+
+        boolean isVisible();
+
+        boolean isObserved();
     }
 
     protected Result reconcile(PublishExtension extension) {
-        // 保证获取到的是最新的 extension
-        if (isFirst.get()) {
-            isFirst.set(false);
-            return new Result(true, Duration.ofMillis(100));
-        }
-        isFirst.set(true);
 
         if (extension == null) {
-            return new Result(false, null);
+            return Result.doNotRetry();
         }
-
         // 这里的写法为了保证引用的 SinglePage 或是其他 Extension 是完全初始化的
         if (extension.getPermalink() == null) {
             // 为了防止出现一直为 null 的情况
             if (currentReGetTimes.get() >= MAX_GET_TIMES) {
-                return new Result(false, null);
+                return Result.doNotRetry();
             }
             currentReGetTimes.addAndGet(1);
             return new Result(true, Duration.ofMillis(100));
@@ -66,7 +63,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
         currentReGetTimes.set(0);
 
         BasePushSetting basePushSetting = getBasePushSetting();
-        if (shouldRetry(basePushSetting, extension)) {
+        if (shouldRetry(basePushSetting, extension) && basePushSetting.getRetryInterval() != 0) {
             return new Result(true, Duration.ofMinutes(basePushSetting.getRetryInterval()));
         } else {
             return Result.doNotRetry();
@@ -82,7 +79,7 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                                 PublishExtension publishExtension) {
         if (basePushSetting.getEnable() && StringUtils.hasText(basePushSetting.getSiteUrl())) {
             try {
-                if (publishExtension.isPublished()) {
+                if (publishExtension.isPublished() && publishExtension.isObserved() && publishExtension.isVisible()) {
                     String slug = publishExtension.getSlug();
                     String permalink = publishExtension.getPermalink();
                     if (!checkIllegal(slug, permalink)) {
@@ -98,7 +95,8 @@ public abstract class AbstractPushReconciler implements Reconciler<Reconciler.Re
                 return true;
             }
         }
-        return true;
+        // 未启用不再重试，减少资源消耗
+        return false;
     }
 
     private boolean checkIllegal(String key, String... pageLinks) {

@@ -47,7 +47,7 @@ public abstract class AbstractPushStrategy implements PushStrategy {
                     throw new Exception("response is null");
                 }
             } catch (Exception e) {
-                log.info("Push exception: {} : {}", getPushType(), e.getMessage());
+                log.warn("Push exception: {} : {}", getPushType(), e.getMessage());
                 recordPushLogs(0, e.getMessage(), siteUrl, pageLinks);
                 return 0;
             }

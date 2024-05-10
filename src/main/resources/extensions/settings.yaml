@@ -31,7 +31,7 @@ spec:
           if: $get(enable).value
           name: retryInterval
           label: 重试间隔时间 (分钟)
-          help: 默认为 360 分钟
+          help: 默认为 360 分钟，设置为0代表不重试
           value: 360
 
         - $formkit: number
