@@ -32,7 +32,7 @@ public class PostPushReconciler extends AbstractPushReconciler
     public Result reconcile(Request request) {
         PublishExtension publishExtension = client.fetch(Post.class, request.name())
             .blockOptional()
-            .map(PostAdapter::new).get();
+            .map(PostAdapter::new).orElseThrow();
         return reconcile(publishExtension);
     }
 

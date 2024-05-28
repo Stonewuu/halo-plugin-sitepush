@@ -40,7 +40,7 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
     public Result reconcile(Request request) {
         PublishExtension publishExtension = client.fetch(SinglePage.class, request.name())
             .blockOptional()
-            .map(SinglePageAdapter::new).get();
+            .map(SinglePageAdapter::new).orElseThrow();
         return reconcile(publishExtension);
     }
 
