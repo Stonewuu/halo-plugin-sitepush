@@ -32,7 +32,7 @@ public class PostPushReconciler extends AbstractPushReconciler
     public Result reconcile(Request request) {
         PublishExtension publishExtension = client.fetch(Post.class, request.name())
             .blockOptional()
-            .map(PostAdapter::new).get();
+            .map(PostAdapter::new).orElseThrow();
         return reconcile(publishExtension);
     }
 
@@ -57,7 +57,7 @@ public class PostPushReconciler extends AbstractPushReconciler
 
         @Override
         public String getPermalink() {
-            return post.getStatus().getPermalink();
+            return post.getStatusOrDefault().getPermalink();
         }
 
         @Override
@@ -71,8 +71,8 @@ public class PostPushReconciler extends AbstractPushReconciler
         }
         @Override
         public boolean isObserved() {
-            if(post.getMetadata() != null && post.getStatus() != null){
-                return post.getMetadata().getVersion().equals(post.getStatus().getObservedVersion());
+            if(post.getMetadata() != null && post.getStatusOrDefault() != null){
+                return post.getMetadata().getVersion().equals(post.getStatusOrDefault().getObservedVersion());
             }
             return false;
         }

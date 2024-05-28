@@ -40,7 +40,7 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
     public Result reconcile(Request request) {
         PublishExtension publishExtension = client.fetch(SinglePage.class, request.name())
             .blockOptional()
-            .map(SinglePageAdapter::new).get();
+            .map(SinglePageAdapter::new).orElseThrow();
         return reconcile(publishExtension);
     }
 
@@ -58,7 +58,7 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
 
         @Override
         public String getPermalink() {
-            return singlePage.getStatus().getPermalink();
+            return singlePage.getStatusOrDefault().getPermalink();
         }
 
         @Override
@@ -73,7 +73,7 @@ public class SinglePagePushReconciler extends AbstractPushReconciler
 
         @Override
         public boolean isObserved() {
-            return singlePage.getMetadata().getVersion().equals(singlePage.getStatus().getObservedVersion());
+            return singlePage.getMetadata().getVersion().equals(singlePage.getStatusOrDefault().getObservedVersion());
         }
     }
 }

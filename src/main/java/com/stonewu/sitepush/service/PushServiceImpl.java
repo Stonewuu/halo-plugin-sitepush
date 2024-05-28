@@ -68,7 +68,8 @@ public class PushServiceImpl implements PushService {
     }
 
     public boolean isNeedPush(String cacheKey) {
-        return GlobalCache.PUSH_CACHE.get(cacheKey) == null
-            || GlobalCache.PUSH_CACHE.get(cacheKey).getPushStatus() != 1;
+        var pushUnique = GlobalCache.PUSH_CACHE.get(cacheKey);
+        return pushUnique == null
+            || pushUnique.getPushStatus() == 0;
     }
 }
