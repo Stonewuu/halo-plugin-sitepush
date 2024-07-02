@@ -10,6 +10,8 @@ import com.stonewu.sitepush.setting.PushSettingProvider;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IModel;
@@ -17,28 +19,34 @@ import org.thymeleaf.model.IModelFactory;
 import org.thymeleaf.processor.element.IElementModelStructureHandler;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import run.halo.app.plugin.SettingFetcher;
+import run.halo.app.plugin.ReactiveSettingFetcher;
 import run.halo.app.theme.dialect.TemplateHeadProcessor;
 
 
+@EnableScheduling
 @Component
 public class SiteHeadProcessor implements TemplateHeadProcessor {
 
-    private final SettingFetcher settingFetcher;
-    private final List<PushSettingProvider> settingProviders;
+    private final ReactiveSettingFetcher settingFetcher;
+    private List<PushSettingProvider> settingProviders;
 
-    public SiteHeadProcessor(SettingFetcher settingFetcher) {
+    public SiteHeadProcessor(ReactiveSettingFetcher settingFetcher) {
         this.settingFetcher = settingFetcher;
+        initProvider();
+    }
+
+    @Scheduled(cron = "0 0/1 * * * ?")
+    private void initProvider() {
         settingProviders = Arrays.asList(
             new BaiduSettingProvider(
                 settingFetcher.fetch(BaiduPushSetting.GROUP, BaiduPushSetting.class)
-                    .orElse(new BaiduPushSetting())),
+                    .defaultIfEmpty(new BaiduPushSetting()).block()),
             new BingPushSettingProvider(
                 settingFetcher.fetch(BingPushSetting.GROUP, BingPushSetting.class)
-                    .orElse(new BingPushSetting())),
+                    .defaultIfEmpty(new BingPushSetting()).block()),
             new GooglePushSettingProvider(
                 settingFetcher.fetch(GooglePushSetting.GROUP, GooglePushSetting.class)
-                    .orElse(new GooglePushSetting()))
+                    .defaultIfEmpty(new GooglePushSetting()).block())
         );
     }
 
@@ -56,7 +64,7 @@ public class SiteHeadProcessor implements TemplateHeadProcessor {
                                     modelFactory.createText(
                                         provider.getSiteVerificationMeta()));
                                 return Mono.empty();
-                            }).orElse(Mono.empty());
+                            }).defaultIfEmpty(Mono.empty());
                     }
                     return Mono.empty();
                 }

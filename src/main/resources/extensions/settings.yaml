@@ -67,7 +67,7 @@ spec:
           name: siteVerification
           label: 百度站点验证（验证码）
           placeholder: 格式：codeva-xxxxxxx
-          help: 申请地址：https://ziyuan.baidu.com/site/siteadd，验证网站使用HTML标签验证，代码中的content就是需要填写的验证码
+          help: 申请地址：https://ziyuan.baidu.com/site/siteadd，验证网站使用HTML标签验证，代码中的content就是需要填写的验证码，修改后1分钟生效
 
         - $formkit: radio
           name: baiduEnable
@@ -169,7 +169,7 @@ spec:
           name: bingSiteVerification
           label: bing站点验证（验证码）
           placeholder: 格式：FD2FCC31DFA40B22CF5FB9F88E8AC95A
-          help: 申请地址：https://www.bing.com/webmasters，验证方式选择HTML Meta Tag，代码中的content就是需要填写的验证码
+          help: 申请地址：https://www.bing.com/webmasters，验证方式选择HTML Meta Tag，代码中的content就是需要填写的验证码，修改后1分钟生效
 
         - $formkit: radio
           name: bingEnable
@@ -269,7 +269,7 @@ spec:
           name: googleSiteVerification
           label: google站点验证（验证码）
           placeholder: 格式：3MKyENvsAfOqs9LL1hxJkxseEMZnwisZVaG8ezodv_E
-          help: 申请地址：https://search.google.com/search-console，验证方式选择 HTML标记，代码中的content就是需要填写的验证码
+          help: 申请地址：https://search.google.com/search-console，验证方式选择 HTML标记，代码中的content就是需要填写的验证码，修改后1分钟生效
 
         - $formkit: radio
           name: googleEnable
