@@ -22,16 +22,16 @@ tasks.register('buildFrontend', PnpmTask) {
     outputs.dir(layout.buildDirectory.dir('dist'))
 }
 
-//tasks.register('pnpmCheck', PnpmTask) {
-//    group = 'verification'
-//    description = 'Runs unit tests using pnpm.'
-//    args = ['test:unit']
-//    dependsOn tasks.named('pnpmInstall')
-//}
-//
-//tasks.named('check') {
-//    dependsOn tasks.named('pnpmCheck')
-//}
+tasks.register('pnpmCheck', PnpmTask) {
+    group = 'verification'
+    description = 'Runs unit tests using pnpm.'
+    args = ['test:unit']
+    dependsOn tasks.named('pnpmInstall')
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('pnpmCheck')
+}
 
 tasks.named('assemble') {
     dependsOn tasks.named('buildFrontend')

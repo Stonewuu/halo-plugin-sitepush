@@ -24,9 +24,11 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
 
     protected AbstractHttpRequestSender(int timeOut) {
         this.timeOut = timeOut;
-        httpClient = HttpClient.create().keepAlive(false)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeOut);
-        httpClient.responseTimeout(Duration.ofMillis(timeOut));
+        this.httpClient = HttpClient.create()
+            .keepAlive(false)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeOut)
+            .responseTimeout(Duration.ofMillis(timeOut))
+            .protocol(HttpProtocol.HTTP11);
     }
 
     protected AbstractHttpRequestSender() {
@@ -36,7 +38,6 @@ public abstract class AbstractHttpRequestSender implements HttpRequestSender {
     @Override
     public Mono<HttpResponse> request(String requestUrl, HttpMethod httpMethod,
         HttpHeaders httpHeaders, String body) {
-        httpClient = httpClient.protocol(HttpProtocol.HTTP11);
         return getRequestSender(httpMethod, httpHeaders)
             .uri(requestUrl)
             .send(ByteBufFlux.fromString(Mono.just(body)))

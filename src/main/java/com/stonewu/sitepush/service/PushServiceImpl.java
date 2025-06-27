@@ -24,7 +24,8 @@ public class PushServiceImpl implements PushService {
     public boolean pushUseAllStrategy(String siteUrl, String slugKey, String... permalinks) {
         boolean allPush = true;
         for (Map.Entry<String, PushStrategy> entry : pushStrategyMap.entrySet()) {
-            allPush = allPush && push(siteUrl, entry.getValue(), slugKey, permalinks);
+            boolean push = push(siteUrl, entry.getValue(), slugKey, permalinks);
+            allPush = allPush && push;
         }
         return allPush;
     }
