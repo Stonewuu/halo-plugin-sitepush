@@ -16,6 +16,8 @@ public class BasePushSetting {
 
     private Integer retryInterval = 360;
 
+    private Integer retryCount = 3;
+
     private Integer cleanOldLogDataDays = 0;
 
     private Integer cleanOldUniqueDataDays = 0;

@@ -1,0 +1,38 @@
+plugins {
+    id 'base'
+    id "com.github.node-gradle.node" version "7.1.0"
+}
+
+group 'run.halo.sitepush.ui'
+
+node {
+    version.set("20.19.1")
+    download.set(true)
+}
+
+tasks.register('buildFrontend', PnpmTask) {
+    group = 'build'
+    description = 'Builds the UI project using pnpm.'
+    args = ['build']
+    dependsOn tasks.named('pnpmInstall')
+    inputs.dir(layout.projectDirectory.dir('src'))
+    inputs.files(fileTree(
+            dir: layout.projectDirectory,
+            includes: ['*.cjs', '*.ts', '*.js', '*.json', '*.yaml']))
+    outputs.dir(layout.buildDirectory.dir('dist'))
+}
+
+tasks.register('pnpmCheck', PnpmTask) {
+    group = 'verification'
+    description = 'Runs unit tests using pnpm.'
+    args = ['test:unit']
+    dependsOn tasks.named('pnpmInstall')
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('pnpmCheck')
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.named('buildFrontend')
+}

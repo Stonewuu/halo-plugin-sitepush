@@ -3,13 +3,13 @@ package com.stonewu.sitepush;
 import com.stonewu.sitepush.scheme.PushLog;
 import com.stonewu.sitepush.scheme.PushUnique;
 import lombok.extern.slf4j.Slf4j;
-import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
 import run.halo.app.plugin.BasePlugin;
+import run.halo.app.plugin.PluginContext;
 
 /**
  * 站点收录推送插件
@@ -20,13 +20,12 @@ import run.halo.app.plugin.BasePlugin;
 @Component
 @Slf4j
 public class SitePushPlugin extends BasePlugin {
-    String pathPrefix = "/root/.halo2/";
     private final SchemeManager schemeManager;
     private final ReactiveExtensionClient client;
 
-    public SitePushPlugin(PluginWrapper wrapper, SchemeManager schemeManager,
+    public SitePushPlugin(PluginContext context, SchemeManager schemeManager,
         ReactiveExtensionClient client) {
-        super(wrapper);
+        super(context);
         this.schemeManager = schemeManager;
         this.client = client;
     }
