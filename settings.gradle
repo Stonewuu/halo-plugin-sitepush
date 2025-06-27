@@ -4,4 +4,5 @@ pluginManagement {
     }
 }
 rootProject.name = 'halo-plugin-sitepush'
+include 'ui'
 

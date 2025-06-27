@@ -92,7 +92,7 @@ function handleClear() {
           role="list"
         >
           <li v-for="pushLog in data.items" :key="pushLog.metadata.name">
-            <PushLogListItem :push-log="pushLog" />
+            <PushLogListItem :push-log="pushLog" :is-select="false" />
           </li>
         </ul>
       </Transition>
