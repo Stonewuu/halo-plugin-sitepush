@@ -3,23 +3,18 @@ package com.stonewu.sitepush.job;
 import com.stonewu.sitepush.scheme.PushLog;
 import com.stonewu.sitepush.scheme.PushUnique;
 import com.stonewu.sitepush.setting.BasePushSetting;
+import java.time.Instant;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import run.halo.app.extension.ExtensionClient;
 import run.halo.app.extension.ListOptions;
-import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.index.query.QueryFactory;
 import run.halo.app.extension.router.selector.FieldSelector;
 import run.halo.app.plugin.SettingFetcher;
-
-import java.time.Instant;
-import java.util.List;
 
 @Component
 @EnableScheduling
@@ -30,9 +25,10 @@ public class CleanOldDataJob {
 
     private ExtensionClient client;
 
-    @Scheduled(cron = "0 0 0/1 * * ?")
+    @Scheduled(cron = "0 0 0 1/1 * ?")
     public void clean() {
-        BasePushSetting basePushSetting = settingFetcher.fetch(BasePushSetting.GROUP, BasePushSetting.class)
+        BasePushSetting basePushSetting =
+            settingFetcher.fetch(BasePushSetting.GROUP, BasePushSetting.class)
                 .orElseGet(BasePushSetting::new);
         Integer cleanOldDataDays = basePushSetting.getCleanOldLogDataDays();
         Integer cleanOldUniqueDataDays = basePushSetting.getCleanOldUniqueDataDays();
@@ -59,7 +55,8 @@ public class CleanOldDataJob {
     }
 
     private static ListOptions getListOptions(Instant instant) {
-        FieldSelector fieldSelector = FieldSelector.of(QueryFactory.lessThan("metadata.creationTimestamp", String.valueOf(instant)));
+        FieldSelector fieldSelector = FieldSelector.of(
+            QueryFactory.lessThan("metadata.creationTimestamp", String.valueOf(instant)));
         ListOptions listOptions = new ListOptions();
         listOptions.setFieldSelector(fieldSelector);
         return listOptions;
