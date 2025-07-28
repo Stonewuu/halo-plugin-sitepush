@@ -9,7 +9,6 @@ import run.halo.app.extension.ReactiveExtensionClient;
 import run.halo.app.extension.Scheme;
 import run.halo.app.extension.SchemeManager;
 import run.halo.app.plugin.BasePlugin;
-import run.halo.app.plugin.PluginContext;
 
 /**
  * 站点收录推送插件
@@ -23,9 +22,8 @@ public class SitePushPlugin extends BasePlugin {
     private final SchemeManager schemeManager;
     private final ReactiveExtensionClient client;
 
-    public SitePushPlugin(PluginContext context, SchemeManager schemeManager,
+    public SitePushPlugin(SchemeManager schemeManager,
         ReactiveExtensionClient client) {
-        super(context);
         this.schemeManager = schemeManager;
         this.client = client;
     }

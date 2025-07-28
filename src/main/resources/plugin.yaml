@@ -4,7 +4,7 @@ metadata:
   name: PluginSitePush
 spec:
   enabled: true
-  requires: ">=2.21.0"
+  requires: ">=2.12.0"
   author:
     name: StoneWu
     website: https://www.stonewu.com
