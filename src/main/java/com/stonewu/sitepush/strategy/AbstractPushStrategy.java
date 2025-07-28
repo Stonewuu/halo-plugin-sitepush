@@ -55,8 +55,9 @@ public abstract class AbstractPushStrategy implements PushStrategy {
             log.info("Pushing to {} Result: {}", getPushType(), body);
             log.info("code: {}", response.code());
             boolean status = response.code() == 200;
-            recordPushLogs(status ? 1 : 0, body, siteUrl, pageLinks);
-            return status ? 1 : 0;
+            int result = status ? 1 : 0;
+            recordPushLogs(result, body, siteUrl, pageLinks);
+            return result;
         }
         return -1;
 

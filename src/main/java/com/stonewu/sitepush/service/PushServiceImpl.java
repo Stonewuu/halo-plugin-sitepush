@@ -70,7 +70,10 @@ public class PushServiceImpl implements PushService {
 
     public boolean isNeedPush(String cacheKey) {
         var pushUnique = GlobalCache.PUSH_CACHE.get(cacheKey);
-        return pushUnique == null
-            || pushUnique.getPushStatus() == 0;
+        if (pushUnique == null) {
+            return true;
+        }
+        Integer pushStatus = pushUnique.getPushStatus();
+        return pushStatus == 0 || pushStatus == -1;
     }
 }
